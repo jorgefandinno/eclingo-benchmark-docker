@@ -136,11 +136,15 @@ def read_xlsx(dfiles):
     assert asswertion_sum == 0, f"{asswertion_sum}\n{newDataFrame}"
     return newDataFrame
 
-def different_instances(df, solver1, solver2):
+def different_instances(df, solver1, solver2, show_solver1=False, show_solver2=False):
     df1 = df[(df[solver1] < 600)  & (df[solver2] >= 600)]
     df2 = df[(df[solver1] >= 600) & (df[solver2] < 600)]
-    # print(df1)
-    # print(df2)
+    if show_solver1 and len(df1) > 0:
+        print(f"Instances solved by {solver1} and not by {solver2}")
+        print(df1)
+    if show_solver2 and len(df2) > 0:
+        print(f"Instances solved by {solver2} and not by {solver1}")
+        print(df2)
     return len(df1), len(df2)
 
 def speed_up(df, solver1, solver2):
@@ -188,7 +192,7 @@ print(s)
 print()
 solver2 = 'ep-asp'
 print(f"Speed-ups {solver1} / {solver2}")
-instances_sovler1, instances_solver2 =  different_instances(df, solver1, solver2)
+instances_sovler1, instances_solver2 =  different_instances(df, solver1, solver2, show_solver2=True)
 print(f"Diffent instances. {solver1} =", instances_sovler1, f"{solver2} =", instances_solver2)
 s = speed_up(df, solver1, solver2)
 different_instances(df, solver1, solver2)

@@ -125,8 +125,8 @@ def read_xlsx(dfiles):
         #     print(df)
         for row in df.iterrows():
             instance = row[1]['instance']
-            if solver == 'qasp':
-                print("------------", solver, instance)
+            # if solver == 'qasp':
+            #     print("------------", solver, instance)
             instance = dnamemap[solver](instance)
             time = row[1]['median']
             # print("--------", newDataFrame.loc[newDataFrame['instance'] == instance])

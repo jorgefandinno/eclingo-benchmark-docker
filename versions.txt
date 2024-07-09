@@ -1,0 +1,35 @@
+- Which operating systems and version are you using?
+
+NAME="Red Hat Enterprise Linux Server"
+VERSION="7.9 (Maipo)"
+
+Are you using pyqasp or qasp.jar? Which version of python/java are you using to run this?
+
+I'm using the executable qasp for elp2qasp as in the script elp-qasp for eligible. As for bomb and yale I'm using qasp.jar with the following example command:
+java -Xmx1g -Xms512m -Xss512k -XX:ReservedCodeCacheSize=256m -XX:HeapBaseMinAddress=4g -jar ${SCRIPT_DIR}/qasp.jar
+
+They should be in elp-qasp-bomb in benchmark-tool/programs and in benchmarks/qasp/yale/*.sh respectively.
+
+I'll make sure to indicate for each benchmark what is the necessary version and requirements in a README file. 
+
+Eclingo reif has:
+      python: 3.9.19
+      java:   OpenJDK version "1.8.0_412"
+            OpenJDK Runtime Environment (build 1.8.0_412-b08)
+            OpenJDK 64-Bit Server VM (build 25.412-b08, mixed mode)
+      clingo: 5.7.1
+
+Eclingo old has:
+      python: 3.6.13 
+      java: Same as eclingo reif
+      clingo: 5.4.0
+
+EP-ASP has:
+      python: 3.8.19
+      java: Same as eclingo reif
+      clingo: 5.4.0
+
+When running selp, which version of clingo are you using?
+
+Selp and elp2qasp are run under the same environment as EP-ASP
+      

@@ -23,6 +23,8 @@ def ep_asp_instance_name(instance):
         number = parts[2]
         if len(number) == 3:
             number = "0" + number
+        if len(number) == 2:
+            number = "00" + number
         name = f"{parts[0]}_bomb_{number}"
         if len(parts) > 3:
             name += f"_{parts[3]}"
@@ -88,6 +90,7 @@ def qasp_instance_name(instance):
 dnamemap = {
     'eclingo-old' : eclingo_instance_name,
     'ep-asp'      : ep_asp_instance_name,
+    'ep-asp-np'   : ep_asp_instance_name,
     'selp'        : selp_instance_name,
     'qasp'        : qasp_instance_name,
 }
@@ -121,7 +124,7 @@ def read_xlsx(dfiles):
         # print(solver)
         if solver == 'eclingo-pro':
             continue
-        # if solver == 'ep-asp':
+        # if solver == 'ep-asp-np':
         #     print(df)
         for row in df.iterrows():
             instance = row[1]['instance']
@@ -129,8 +132,15 @@ def read_xlsx(dfiles):
             #     print("------------", solver, instance)
             instance = dnamemap[solver](instance)
             time = row[1]['median']
-            # print("--------", newDataFrame.loc[newDataFrame['instance'] == instance])
-            new_row = newDataFrame.loc[newDataFrame['instance'] == instance].index[0]
+            try:
+                new_row = newDataFrame.loc[newDataFrame['instance'] == instance].index[0]
+            except IndexError as e:
+                print("-------- solver:", solver, "instance:", instance, "time:", time, "row[1]['instance']", row[1]['instance'])
+                print("--------", newDataFrame.loc[newDataFrame['instance'] == instance])
+                print(df)
+                print("----------------")
+                print(newDataFrame)
+                raise e
             newDataFrame.at[new_row, solver] = time
     asswertion_sum = newDataFrame.isnull().sum().sum()
     assert asswertion_sum == 0, f"{asswertion_sum}\n{newDataFrame}"
@@ -170,11 +180,12 @@ def speed_up(df, solver1, solver2):
     }
 
 dfiles = {
-    'eclingo-pro' : 'eclingo_reif_YBE_Propagate_600s.xlsx',
-    'eclingo-old' : 'eclingo_YBE_600s.xlsx',
-    'ep-asp'      : 'EP_ASP_YBE_600s.xlsx',
-    'selp'        : 'selp_YBE_600s.xlsx',
-    'qasp'        : 'qasp_YBE_600s.xlsx',
+    'eclingo-pro'  : 'eclingo_reif_YBE_Propagate_600s.xlsx',
+    'eclingo-old'  : 'eclingo_YBE_600s.xlsx',
+    'ep-asp'       : 'EP_ASP_YBE_600s.xlsx',
+    'ep-asp-np'    : 'EP_ASP_NP_YBE_600s.xlsx',
+    'selp'         : 'selp_YBE_600s.xlsx',
+    'qasp'         : 'qasp_YBE_600s.xlsx',
 }
 
 dfiles = {k: Path(v) for k, v in dfiles.items()}
@@ -183,7 +194,7 @@ df = read_xlsx(dfiles)
 print(f"Numeber of instances: {len(df)}")
 solver1 = 'eclingo-pro'
 solver2 = 'eclingo-old'
-# print(df)
+print(df)
 print(f"Speed-ups {solver1} / {solver2}")
 s = speed_up(df, solver1, solver2)
 instances_sovler1, instances_solver2 =  different_instances(df, solver1, solver2)
@@ -191,6 +202,14 @@ print(f"Diffent instances. {solver1} =", instances_sovler1, f"{solver2} =", inst
 print(s)
 print()
 solver2 = 'ep-asp'
+print(f"Speed-ups {solver1} / {solver2}")
+instances_sovler1, instances_solver2 =  different_instances(df, solver1, solver2, show_solver2=True)
+print(f"Diffent instances. {solver1} =", instances_sovler1, f"{solver2} =", instances_solver2)
+s = speed_up(df, solver1, solver2)
+different_instances(df, solver1, solver2)
+print(s)
+print()
+solver2 = 'ep-asp-np'
 print(f"Speed-ups {solver1} / {solver2}")
 instances_sovler1, instances_solver2 =  different_instances(df, solver1, solver2, show_solver2=True)
 print(f"Diffent instances. {solver1} =", instances_sovler1, f"{solver2} =", instances_solver2)

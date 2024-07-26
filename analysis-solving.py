@@ -166,7 +166,7 @@ def speed_up(df, solver1, solver2):
     and_df = df[(df[solver1] < 600) & (df[solver2] < 600)]
     and_sums = and_df.sum()
     and_speed_up = and_sums[solver2] / and_sums[solver1]
-    all_or_df = df[(df['eclingo-pro'] < 600) | (df['eclingo-old'] < 600) | (df['ep-asp'] < 600)]
+    all_or_df = df[(df['eclingo-pro'] < 600) | (df['eclingo-np'] < 600)]
     all_or_sums = all_or_df.sum()
     all_or_speed_up = all_or_sums[solver2] / all_or_sums[solver1]
     return {

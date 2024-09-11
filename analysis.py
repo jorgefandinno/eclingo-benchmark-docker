@@ -191,12 +191,9 @@ dfiles = {
 dfiles = {k: Path(v) for k, v in dfiles.items()}
 
 df = read_xlsx(dfiles)
-print(df)
 # mask = df.apply(lambda x: x['instance'].startswith('eligible'), axis=1)
-mask = df.apply(lambda x: "bomb" in x['instance'], axis=1)
-print(mask)
-df = df[mask]
-print(df)
+# mask = df.apply(lambda x: "bomb" in x['instance'], axis=1)
+# df = df[mask]
 
 
 print(f"Numeber of instances: {len(df)}")

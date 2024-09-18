@@ -12,26 +12,28 @@ ARG GIT_ACCESS_TOKEN
 # Update Ubuntu Software repository
 RUN apt update
 # Install conda
-WORKDIR ~/
+WORKDIR /root/
 RUN apt install -y wget
 RUN apt install -y git
-RUN mkdir -p ~/miniconda3
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
+RUN apt install -y python2
+RUN apt install -y libnuma-dev
+RUN mkdir -p /root/miniconda3
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /root/miniconda3/miniconda.sh
 RUN chmod +x ~/miniconda3/miniconda.sh
-RUN bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
-RUN rm -rf ~/miniconda3/miniconda.sh
-RUN ~/miniconda3/bin/conda init bash
+RUN bash /root/miniconda3/miniconda.sh -b -u -p /root/miniconda3
+RUN rm -rf /root/miniconda3/miniconda.sh
+RUN /root/miniconda3/bin/conda init bash
 
 # Clone benchmark tool and create conda environment
 RUN git clone https://${GIT_ACCESS_TOKEN}@github.com/jorgefandinno/eclingo-benchmark.git
-WORKDIR /~/eclingo-benchmark/
+WORKDIR /root/eclingo-benchmark/
 RUN sed -i 's/runsolver/eclingo/' run-benchmark.xml
-RUN ~/miniconda3/bin/conda env create -f envs/environment_eclingo_reif.yml
+RUN /root/miniconda3/bin/conda env create -f envs/environment_eclingo_reif.yml
 
 # activate conda env, install eclingo and run benchmark
-RUN echo "conda activate eclingo_reif" >> ~/.bashrc \
-    && ~/miniconda3/bin/conda init bash \
-    && . ~/.bashrc \
+RUN echo "conda activate eclingo_reif" >> /root/.bashrc \
+    && /root/miniconda3/bin/conda init bash \
+    && . /root/.bashrc \
     && git clone https://github.com/jorgefandinno/eclingo.git \
     && cd eclingo/ \
     && pip install . \

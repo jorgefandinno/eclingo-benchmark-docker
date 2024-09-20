@@ -7,8 +7,6 @@ LABEL description="This is a custom Docker Image for benchmarking solvers for Ep
 # Disable Prompt During Packages Installation
 ARG DEBIAN_FRONTEND=noninteractive
 
-ARG GIT_ACCESS_TOKEN
-
 # Update Ubuntu Software repository
 RUN apt update
 # Install conda
@@ -24,8 +22,8 @@ RUN bash /root/miniconda3/miniconda.sh -b -u -p /root/miniconda3
 RUN rm -rf /root/miniconda3/miniconda.sh
 RUN /root/miniconda3/bin/conda init bash
 
-# Clone benchmark tool and create conda environment
-RUN git clone https://${GIT_ACCESS_TOKEN}@github.com/jorgefandinno/eclingo-benchmark.git
+# Copy benchmark tool and create conda environment
+COPY eclingo-benchmark /root/eclingo-benchmark/
 WORKDIR /root/eclingo-benchmark/
 RUN sed -i 's/runsolver/eclingo/' run-benchmark.xml
 RUN /root/miniconda3/bin/conda env create -f envs/environment_eclingo_reif.yml
@@ -39,5 +37,3 @@ RUN echo "conda activate eclingo_reif" >> /root/.bashrc \
     && pip install . \
     && cd .. \
     && nohup ./run.sh eclingo-no
-
-# ENTRYPOINT ["bash"]

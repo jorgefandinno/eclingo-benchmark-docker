@@ -1,12 +1,7 @@
 ### Clone repo with submodules:
 ```
-git clone --recurse-submodules <repository-url>
-```
-OR
-```
 git clone <repository-url>
-git submodule init
-git submodule update
+cd eclingo-benchmark-docker/eclingo-docker/
 ```
 
 ### Command to build the docker file:

@@ -1,3 +1,0 @@
-[submodule "eclingo-docker/eclingo-benchmark"]
-	path = eclingo-docker/eclingo-benchmark
-	url = https://github.com/jorgefandinno/eclingo-benchmark.git

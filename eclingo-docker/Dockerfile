@@ -25,10 +25,10 @@ RUN /root/miniconda3/bin/conda init bash
 # Copy benchmark tool and create conda environment
 COPY eclingo-benchmark /root/eclingo-benchmark/
 WORKDIR /root/eclingo-benchmark/
-RUN sed -i 's/runsolver/eclingo/' run-benchmark.xml
-RUN /root/miniconda3/bin/conda env create -f envs/environment_eclingo_reif.yml
+# RUN sed -i 's/runsolver/eclingo/' run-benchmark.xml
 
-# activate conda env, install eclingo and run benchmark
+# create and activate conda env reif, install eclingo new and run benchmark
+RUN /root/miniconda3/bin/conda env create -f envs/environment_eclingo_reif.yml
 RUN echo "conda activate eclingo_reif" >> /root/.bashrc \
     && /root/miniconda3/bin/conda init bash \
     && . /root/.bashrc \
@@ -36,4 +36,16 @@ RUN echo "conda activate eclingo_reif" >> /root/.bashrc \
     && cd eclingo/ \
     && pip install . \
     && cd .. \
-    && nohup ./run.sh eclingo-no
+    && rm -r eclingo \
+    && nohup ./run.sh eclingo
+
+# create and activate conda env old, install eclingo old and run benchmark
+RUN /root/miniconda3/bin/conda env create -f envs/environment_eclingo_old.yml
+RUN echo "conda activate eclingo_old" >> /root/.bashrc \
+    && /root/miniconda3/bin/conda init bash \
+    && . /root/.bashrc \
+    && git clone https://github.com/potassco/eclingo.git \
+    && cd eclingo/ \
+    && pip install . \
+    && cd .. \
+    && nohup ./run.sh eclingo-old

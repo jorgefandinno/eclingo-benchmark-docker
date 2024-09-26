@@ -2,15 +2,15 @@
 current_dir=$(pwd)
 
 # Epistemic Solver Possibilities 
-# eclingo               -> Based on the environment used and the version installed, one could run the original version or the new version.
-# eclingo-no            -> Run newer eclingo reification version without propagation of facts.
+# eclingo-old           -> Based on the environment used and the version installed, one could run the original version or the new version.
+# eclingo               -> Run newer eclingo reification version without propagation of facts.
 # ep_asp                -> Run EP-ASP solver.
 # ep_asp_no_planning    -> Run EP-ASP solver without planning cues given by planning=0 parameter. "Vanilla version".
 # selp                  -> Run selp solver.
 # qasp                  -> Run elp2qasp solver.
 
 # Define a list of valid arguments
-VALID_ARGS=("eclingo" "eclingo-no" "ep_asp" "ep_asp_no_planning" "selp" "qasp")
+VALID_ARGS=("eclingo-old" "eclingo" "ep_asp" "ep_asp_no_planning" "selp" "qasp")
 
 # Check if an argument is provided
 if [ -z "$1" ]; then

@@ -9,8 +9,8 @@ BENCHMARKS="./benchmarks"
 BENCHMARK_TOOL="./benchmark-tool"
 
 # Add command eclingo --ignore-shows --preprocessing-level=3 --no-eclingo-propagate --stats
-COMMANDS = {"eclingo": f"eclingo $@\n\n",
-            "eclingo-no": f"eclingo --ignore-shows --preprocessing-level=3 --no-eclingo-propagate --stats $@\n\n",
+COMMANDS = {"eclingo-old": f"eclingo $@\n\n",
+            "eclingo": f"eclingo --ignore-shows --preprocessing-level=3 --no-eclingo-propagate --stats $@\n\n",
             "ep_asp":  f"bash \"$@\"\n\n",
             "ep_asp_no_planning":  f"bash \"$@\"\n\n",
             "selp":    f"bash \"$@\"\n\n",
@@ -18,7 +18,7 @@ COMMANDS = {"eclingo": f"eclingo $@\n\n",
 
 SHOW_COMMAND_GROUNDERS = {"show-gringo", "show-idlv"}
 
-COMMAND_GROUNDERS = {"eclingo", "eclingo-no", "ep_asp", "ep_asp_no_planning", "selp", "qasp"}
+COMMAND_GROUNDERS = {"eclingo-old", "eclingo", "ep_asp", "ep_asp_no_planning", "selp", "qasp"}
 
 BENCHMARK_ORIGIN = {}
 
@@ -392,14 +392,14 @@ def prepare_benchmarks():
     # Get specific benchmark origin based on solver used.
     benchmark_origin = BENCHMARK_ORIGIN[args.command]
     
-    # Ensure that eclingo-no is redirected to eclingo benchmark folders, but uses extra commands
+    # Ensure that eclingo-old is redirected to eclingo benchmark folders, but uses extra commands
     benchmark_origin = os.path.join(benchmark_origin, command_dir)
-    if benchmark_origin == "./benchmarks/eclingo-no":
+    if benchmark_origin == "./benchmarks/eclingo-old":
         benchmark_origin = "./benchmarks/eclingo"
     
     print(f"benchmark origin: {benchmark_origin}, command dir: {command_dir}")
    
-    if command_dir == "eclingo" or command_dir == "eclingo-no":
+    if command_dir == "eclingo" or command_dir == "eclingo-old":
         print(f"\nUsing solver: Eclingo")
         for benchmark_path in os.listdir(benchmark_origin):
             benchmark_path = os.path.join(benchmark_origin, benchmark_path)

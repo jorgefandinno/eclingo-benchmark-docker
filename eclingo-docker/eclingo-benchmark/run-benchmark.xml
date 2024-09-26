@@ -1,7 +1,7 @@
 <runscript output="output">
 	<machine name="zuse" cpu="24x8xE5520@2.27GHz" memory="24GB"/>
 	<config name="generic" template="templates/basic.sh"/>
-	<system name="script" version="0" measures="runsolver" config="generic">
+	<system name="script" version="0" measures="eclingo" config="generic">
 
       <!-- SET DIFFERENT CONFIGURATIONS /-->
       <setting name="one"   tag="doit" command="solver.sh" options="" />

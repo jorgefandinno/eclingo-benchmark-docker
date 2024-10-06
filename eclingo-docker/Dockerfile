@@ -27,6 +27,9 @@ COPY eclingo-benchmark /root/eclingo-benchmark/
 WORKDIR /root/eclingo-benchmark/
 # RUN sed -i 's/runsolver/eclingo/' run-benchmark.xml
 
+# set bash (interactive) as the default shell
+# SHELL ["/bin/bash", "-i", "-c"]
+
 # create and activate conda env reif, install eclingo new and run benchmark
 RUN /root/miniconda3/bin/conda env create -f envs/environment_eclingo_reif.yml
 RUN echo "conda activate eclingo_reif" >> /root/.bashrc \

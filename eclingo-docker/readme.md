@@ -1,15 +1,23 @@
-### Clone repo with submodules:
+### Clone repository:
 ```
 git clone <repository-url>
 cd eclingo-benchmark-docker/eclingo-docker/
 ```
 
-### Command to build the docker file:
+### Command to build the docker image:
 ```
-docker build . -t <image-name>
+# In directory with dockerfile
+docker build -t <image-name:tag> .
 ```
 
-### Command to run the docker:
+### Command to run the docker container:
 ```
-docker run -it <image-name>
+# -i for interactive, -t for terminal
+docker run -it <image-name:tag>
+```
+
+### Command to save build logs to a log file
+```
+# --no-cache ignores cached layers
+docker build -t <image-name:tag> --no-cache --progress=plain . &> build.log
 ```

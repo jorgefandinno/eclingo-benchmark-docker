@@ -40,9 +40,9 @@ def check_sat(output_file: str):
         lines = file.readlines()
         for line in lines:
             if line.startswith(("SAT", "SATISFIABLE")):
-                return True
+                return "SAT"
             elif line.startswith(("UNSAT", "UNSATISFIABLE")):
-                return False
+                return "UNSAT"
         return None
 
 def verify_all_instances(solver_output: Tuple[Tuple, Tuple]):
@@ -53,22 +53,25 @@ def verify_all_instances(solver_output: Tuple[Tuple, Tuple]):
     else:
         print("Output is not consistent !!")
 
-    match_file = open_file("matching_instances.txt")
-    non_match_file = open_file("non_matching_instances.txt")
+    match_file = open_file("matching_instances.txt", (solver_1, solver_2))
+    non_match_file = open_file("non_matching_instances.txt", (solver_1, solver_2))
     
     for output_file in solver_1_output:
-        if solver_1_output[output_file] == solver_2_output[output_file]:
-            match_file.write(f"{output_file}, {solver_1}, {solver_2}\n")
+        if solver_1_output[output_file] == None or solver_2_output[output_file] == None:
+            raise ValueError("The values must only be SAT or UNSAT !!")
+        elif solver_1_output[output_file] == solver_2_output[output_file]:
+            match_file.write(f"{output_file}, {solver_1_output[output_file]}, {solver_2_output[output_file]}\n")
         else:
-            non_match_file.write(f"{output_file}, {solver_1}, {solver_2}\n")
+            non_match_file.write(f"{output_file}, {solver_1_output[output_file]}, {solver_2_output[output_file]}\n")
             print(f"{output_file} not verified!!")
     
     match_file.close()
     non_match_file.close()
 
-def open_file(file_name: str):
+def open_file(file_name: str, solvers: Tuple[str, str]):
     file = open(file_name, "w")
-    file.write("Instance, Solver1, Solver2\n")
+    solver_1, solver_2 = solvers
+    file.write(f"Instance, {solver_1}, {solver_2}\n")
     return file
 
 def main():

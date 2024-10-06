@@ -1,17 +1,24 @@
 import os
 import glob
 
-def check_output(dir_path_1: str, dir_path_2: str) -> bool:
-    """
-    Checks the satisfiability based on the saved output file
-    """
-    
-    debug_dict_1 = get_all_sat_checks(dir_path_1)
-    debug_dict_2 = get_all_sat_checks(dir_path_2)
-    verify_all_instances(debug_dict_1, debug_dict_2)
+from typing import Tuple
 
-def get_all_sat_checks(dir_path):
-    if not os.path.exists(dir_path):
+
+def check_output(solver_1: str, solver_2: str) -> bool:
+    """
+    Checks the satisfiability output for the solvers
+    """
+    dir_path_1 = f"running/benchmark-tool-{solver_1}/output/project/zuse/results/suite/"
+    dir_path_2 = f"running/benchmark-tool-{solver_2}/output/project/zuse/results/suite/"
+    
+    solver_1_output = get_all_sat_checks(dir_path_1)
+    solver_2_output = get_all_sat_checks(dir_path_2)
+
+    solver_output = ((solver_1, solver_1_output), (solver_2, solver_2_output))
+    verify_all_instances(solver_output)
+
+def get_all_sat_checks(dir_path: str):
+    if not os.path.isdir(dir_path):
         raise NotADirectoryError(f"The {dir_path} is not a directory.")
     
     debug_dict = {}
@@ -26,7 +33,7 @@ def get_all_sat_checks(dir_path):
     return debug_dict
 
 def check_sat(output_file: str):
-    if not os.path.exists(output_file):
+    if not os.path.isfile(output_file):
         raise FileNotFoundError(f"{output_file} does not exist!!")
     
     with open(output_file, "r") as file:
@@ -38,26 +45,36 @@ def check_sat(output_file: str):
                 return False
         return None
 
-def verify_all_instances(debug_dict_1, debug_dict_2):
-    if debug_dict_1 == debug_dict_2:
-        print("Output is correct.")
-    else:
-        print("Output is not correct!!")
+def verify_all_instances(solver_output: Tuple[Tuple, Tuple]):
+    ((solver_1, solver_1_output), (solver_2, solver_2_output)) = solver_output
 
-    with open("debug_file.txt", "w") as file:
-        for output_file in debug_dict_1:
-            file.write(f"{output_file}, {debug_dict_1[output_file]}, {debug_dict_2[output_file]}\n")
-            if not debug_dict_1[output_file] == debug_dict_2[output_file]:
-                print(f"{output_file} not verified!!")
-                return
-        print("All instances verified.")
+    if solver_1_output == solver_2_output:
+        print("Output is consistent across both solvers.")
+    else:
+        print("Output is not consistent !!")
+
+    match_file = open_file("matching_instances.txt")
+    non_match_file = open_file("non_matching_instances.txt")
+    
+    for output_file in solver_1_output:
+        if solver_1_output[output_file] == solver_2_output[output_file]:
+            match_file.write(f"{output_file}, {solver_1}, {solver_2}\n")
+        else:
+            non_match_file.write(f"{output_file}, {solver_1}, {solver_2}\n")
+            print(f"{output_file} not verified!!")
+    
+    match_file.close()
+    non_match_file.close()
+
+def open_file(file_name: str):
+    file = open(file_name, "w")
+    file.write("Instance, Solver1, Solver2\n")
+    return file
 
 def main():
     solver_1 = "eclingo"
     solver_2 = "eclingo-old"
-    dest_dir_1 = f"running/benchmark-tool-{solver_1}/output/project/zuse/results/suite/"
-    dest_dir_2 = f"running/benchmark-tool-{solver_2}/output/project/zuse/results/suite/"
-    check_output(dest_dir_1, dest_dir_2)
+    check_output(solver_1, solver_2)
 
 if __name__ == "__main__":
     main()

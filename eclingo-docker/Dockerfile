@@ -32,6 +32,9 @@ WORKDIR /root/eclingo-benchmark/
 
 # create and activate conda env reif, install eclingo new and run benchmark
 RUN /root/miniconda3/bin/conda env create -f envs/environment_eclingo_reif.yml
+# create and activate conda env old, install eclingo old and run benchmark
+RUN /root/miniconda3/bin/conda env create -f envs/environment_eclingo_old.yml
+
 RUN echo "conda activate eclingo_reif" >> /root/.bashrc \
     && . /root/.bashrc \
     && git clone https://github.com/jorgefandinno/eclingo.git \
@@ -39,15 +42,13 @@ RUN echo "conda activate eclingo_reif" >> /root/.bashrc \
     && pip install . \
     && cd .. \
     && rm -r eclingo \
-    && nohup ./run.sh eclingo
+    && ./run.sh eclingo --max-instances=2 --benchmark=yale > log.txt
 
-# create and activate conda env old, install eclingo old and run benchmark
-RUN /root/miniconda3/bin/conda env create -f envs/environment_eclingo_old.yml
 RUN echo "conda activate eclingo_old" >> /root/.bashrc \
     && . /root/.bashrc \
     && git clone https://github.com/potassco/eclingo.git \
     && cd eclingo/ \
     && pip install . \
     && cd .. \
-    && nohup ./run.sh eclingo-old \
-    && python verify.py
+    && ./run.sh eclingo-old --max-instances=2 --benchmark=yale >> log.txt \
+    && python verify.py 

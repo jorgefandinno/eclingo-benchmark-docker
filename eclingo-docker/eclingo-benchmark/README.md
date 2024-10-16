@@ -94,7 +94,7 @@ IMPORTANT TO READ ALL DOCUMENTATIO AND TO FOLLOW ALL THE STEPS.
     + Running steps:
 
         - Execute the benchmarks for a specific epistemic solver:
-            1. Run -> nohup ./run.sh {solver_name}
+            1. Run -> nohup ./run.sh {solver_name} [--benchmark=<benchmark-name>] [--max-instances=<number>]
                where {solver_name} is an argument from the list of possible epistemic solvers:
                
                 # eclingo               -> Based on the environment used one could run the original version or the new version.
@@ -104,6 +104,9 @@ IMPORTANT TO READ ALL DOCUMENTATIO AND TO FOLLOW ALL THE STEPS.
                 # selp                  -> Run selp solver.
                 # qasp                  -> Run elp2qasp solver.
 
+            
+               <benchmark-name> can be one of the following: {"bomb", "reversibility", "eligible", "yale"},
+               <number> is the maximum number of instances to be included for the specified benchmark,
                and nohup is a command that prevents the process from stopping even if the computer terminal is closed.
 
                • TO RUN eclingo-no:

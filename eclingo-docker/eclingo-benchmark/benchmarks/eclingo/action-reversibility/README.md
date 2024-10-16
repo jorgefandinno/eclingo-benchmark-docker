@@ -1,4 +1,4 @@
-This directory contains encodings and instances for the action-reversability problems.
+This directory contains encodings and instances for the action-reversibility problems.
 
 Run as follows
 

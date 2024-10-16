@@ -6,7 +6,7 @@
 time(0).
 time(T+1) :- time(T), T<=H, horizon(H).
 
-%%%%%%%% guess action to check for reversability %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%% guess action to check for reversibility %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %chosen(A) | -chosen(A) :- action(action(A)).
  chosen(A) :- action(action(A)), not &k{-chosen(A)}.
 -chosen(A) :- action(action(A)), not &k{ chosen(A)}.

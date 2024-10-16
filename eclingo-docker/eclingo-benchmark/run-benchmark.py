@@ -29,6 +29,8 @@ for command in SHOW_COMMAND_GROUNDERS:
     BENCHMARK_ORIGIN[command] = BENCHMARKS
 
 parser = argparse.ArgumentParser(prog='Run grounder')
+parser.add_argument("--benchmark", default="all")
+parser.add_argument("--max-instances")
 subparsers = parser.add_subparsers(title='subcommands', help='additional for help', dest="command")
 subparsers.required = True
 
@@ -46,7 +48,7 @@ BENCHMARK_RUNNING=f"./running/benchmark-tool-{command_dir}"
 
 # -------------------------------------------------------------------------------
 
-def prepare_benchmark_bomb(benchmark_path):
+def prepare_benchmark_bomb(benchmark_path, max_instances=None):
     # Create directory for different set of problems. Encoding Directory
     benchmark_name = os.path.basename(benchmark_path)
     dir = os.path.join(BENCHMARK_RUNNING,"experiments","instances", benchmark_name)
@@ -82,8 +84,11 @@ def prepare_benchmark_bomb(benchmark_path):
         instances_many_path = os.path.join(benchmark_path, "instances_many")
         #print(instances_many_path)
     
-        instances = (instance for instance in os.listdir(instances_path) if instance.endswith(".lp")) 
+        instances = (instance for instance in os.listdir(instances_path) if instance.endswith(".lp"))
         many_instances = (instance for instance in os.listdir(instances_many_path) if instance.endswith(".lp")) 
+        if max_instances is not None:
+            instances = (instance for instance in sorted(instances)[:max_instances])
+            many_instances = (instance for instance in sorted(many_instances)[:max_instances])
         
         if os.path.basename(encoding) == "bmtc" or os.path.basename(encoding) == "bmtuc":
             # Get all instances_many
@@ -108,7 +113,7 @@ def prepare_benchmark_bomb(benchmark_path):
                 os.system(f"cat {base_encoding} {encoding_path} {instance_path} > {output_path}")
                 
                 
-def prepare_benchmark_action(benchmark_path):
+def prepare_benchmark_action(benchmark_path, max_instances=None):
     # Create directory for different set of problems. Encoding Directory
     benchmark_name = os.path.basename(benchmark_path)
     dir = os.path.join(BENCHMARK_RUNNING,"experiments","instances", benchmark_name)
@@ -124,6 +129,9 @@ def prepare_benchmark_action(benchmark_path):
         # print("The instances path: ", instances_path)
         
         instances = (instance for instance in os.listdir(instances_path) if instance.endswith(".lp")) 
+        if max_instances is not None:
+            instances = (instance for instance in sorted(instances)[:max_instances])
+            
         # Get all instances
         for instance in instances:
             instance_path = os.path.join(instances_path, os.path.basename(instance))
@@ -136,7 +144,7 @@ def prepare_benchmark_action(benchmark_path):
             # print(encoding_path, instance_path, output_path)
             os.system(f"cat {encoding_path} {instance_path}  > {output_path}")
 
-def prepare_benchmark_yale(benchmark_path):
+def prepare_benchmark_yale(benchmark_path, max_instances=None):
     # Create directory for different set of problems. Encoding Directory
     benchmark_name = os.path.basename(benchmark_path)
     dir = os.path.join(BENCHMARK_RUNNING, "experiments", "instances", benchmark_name)
@@ -152,6 +160,8 @@ def prepare_benchmark_yale(benchmark_path):
         # print("The instances path: ", instances_path)
         
         instances = (instance for instance in os.listdir(instances_path) if instance.endswith(".lp")) 
+        if max_instances is not None:
+            instances = (instance for instance in sorted(instances)[:max_instances])
         
         # Get all instances
         for instance in instances:
@@ -165,7 +175,7 @@ def prepare_benchmark_yale(benchmark_path):
             # print(encoding_path, instance_path, output_path)
             os.system(f"cat {encoding_path} {instance_path}  > {output_path}")
             
-def prepare_benchmark_eligible_eclingo(benchmark_path):
+def prepare_benchmark_eligible_eclingo(benchmark_path, max_instances=None):
     # Create directory for different set of problems. Encoding Directory
     benchmark_name = os.path.basename(benchmark_path)
     dir = os.path.join(BENCHMARK_RUNNING, "experiments", "instances", benchmark_name)
@@ -178,7 +188,9 @@ def prepare_benchmark_eligible_eclingo(benchmark_path):
         #print("The encoding path: ", encoding_path, " on ", encoding)
         
         instances_path = os.path.join(benchmark_path, "input")
-        instances = (instance for instance in os.listdir(instances_path) if instance.endswith(".lp")) 
+        instances = (instance for instance in os.listdir(instances_path) if instance.endswith(".lp"))
+        if max_instances is not None:
+            instances = (instance for instance in sorted(instances)[:max_instances])
         
         # Get all instances
         for instance in instances:
@@ -398,6 +410,11 @@ def prepare_benchmarks():
         benchmark_origin = "./benchmarks/eclingo"
     
     print(f"benchmark origin: {benchmark_origin}, command dir: {command_dir}")
+    benchmark = args.benchmark
+    try:
+        max_instances = int(args.max_instances) if args.max_instances is not None else None
+    except ValueError:
+        raise ValueError(f"The value for max_instances argument must be an integer !!")
    
     if command_dir == "eclingo" or command_dir == "eclingo-old":
         print(f"\nUsing solver: Eclingo")
@@ -406,21 +423,25 @@ def prepare_benchmarks():
             if os.path.isdir(benchmark_path):
 
                 if os.path.basename(benchmark_path) == "bomb_problems":
-                    print("Working on BOMB Problems")
-                    prepare_benchmark_bomb(benchmark_path)
+                    if benchmark == "all" or "bomb" in benchmark:
+                        print("Working on BOMB Problems")
+                        prepare_benchmark_bomb(benchmark_path, max_instances)
                     # pass
-                elif os.path.basename(benchmark_path) == "action-reversability":
-                    # print("Working on ACTION Problems")
-                    # prepare_benchmark_action(benchmark_path)
-                    pass
+                elif os.path.basename(benchmark_path) == "action-reversibility":
+                    if benchmark == "all" or "reversibility" in benchmark:
+                        # print("Working on ACTION Problems")
+                        # prepare_benchmark_action(benchmark_path, max_instances)
+                        pass
                 elif os.path.basename(benchmark_path) == "eligible":
-                    print("Working on ELIGIBLE Problems")
-                    prepare_benchmark_eligible_eclingo(benchmark_path)
-                    # pass
+                    if benchmark == "all" or "eligible" in benchmark:
+                        print("Working on ELIGIBLE Problems")
+                        prepare_benchmark_eligible_eclingo(benchmark_path, max_instances)
+                        # pass
                 else:
-                    print("Working on YALE Problems")
-                    prepare_benchmark_yale(benchmark_path)
-                    # pass
+                    if benchmark == "all" or "yale" in benchmark:
+                        print("Working on YALE Problems")
+                        prepare_benchmark_yale(benchmark_path, max_instances)
+                        # pass
                 
     elif command_dir == "ep_asp":
         print(f"\nUsing solver: EP-ASP")

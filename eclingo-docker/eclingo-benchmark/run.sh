@@ -18,10 +18,26 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
+# check if the second argument is provided and is one of either benchmark or max-instances
+additional_args=""
+if [ -n "$2" ] && ([[ "$2" == "--benchmark="* ]] || [[ "$2" == "--max-instances="* ]]); then
+  additional_args+="$2"
+fi
+
+# check for third argument and concat with second argument
+if [ -n "$3" ] && ([[ "$3" == "--benchmark="* ]] || [[ "$3" == "--max-instances="* ]]); then
+  additional_args+=" $3"
+fi
+
 # Check if the provided argument is in the list of valid arguments
 if [[ " ${VALID_ARGS[@]} " =~ " $1 " ]]; then
-  # If valid, execute the Python script with the provided argument
-  python3 run-benchmark.py "$1"
+  if [ -n "${additional_args}" ]; then
+    # If valid, execute the Python script with all the provided argument
+    python3 run-benchmark.py ${additional_args} $1
+  else
+    # execute the Python script with only solver name
+    python3 run-benchmark.py $1
+  fi
 else
   # If not valid, print an error message
   echo "Error: '$1' is not a valid argument."

@@ -32,11 +32,11 @@ def get_all_sat_checks(dir_path: str):
                 debug_dict[new_file_name] = sat
     return debug_dict
 
-def check_sat(output_file: str):
-    if not os.path.isfile(output_file):
-        raise FileNotFoundError(f"{output_file} does not exist!!")
+def check_sat(path: str):
+    if not os.path.isfile(path):
+        raise FileNotFoundError(f"{path} does not exist!!")
     
-    with open(output_file, "r") as file:
+    with open(path, "r") as file:
         lines = file.readlines()
         for line in lines:
             if line.startswith(("SAT", "SATISFIABLE")):
@@ -57,7 +57,7 @@ def verify_all_instances(solver_output: Tuple[Tuple, Tuple]):
     non_match_file = open_file("non_matching_instances.txt", (solver_1, solver_2))
     
     for output_file in solver_1_output:
-        if solver_1_output[output_file] == None or solver_2_output[output_file] == None:
+        if not all((solver_1_output[output_file], solver_2_output[output_file])):
             raise ValueError("The values must only be SAT or UNSAT !!")
         elif solver_1_output[output_file] == solver_2_output[output_file]:
             match_file.write(f"{output_file}, {solver_1_output[output_file]}, {solver_2_output[output_file]}\n")
@@ -73,6 +73,20 @@ def open_file(file_name: str, solvers: Tuple[str, str]):
     solver_1, solver_2 = solvers
     file.write(f"Instance, {solver_1}, {solver_2}\n")
     return file
+
+def create_answer_set(path):
+    if not os.path.isfile(path):
+        raise FileNotFoundError(f"{path} does not exist!!")
+    
+    read_file = open(path, "r")
+    lines = read_file.readlines()
+    read_file.close()
+    answer_set = lines[11]
+    write_file = open("program_ext.lp", "w")
+    as_split = answer_set.split()
+    for atom in as_split:
+        write_file.write(f":- not {atom}.\n")
+    write_file.close()
 
 def main():
     solver_1 = "eclingo"

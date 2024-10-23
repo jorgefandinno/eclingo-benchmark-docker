@@ -25,17 +25,25 @@ def get_all_sat_checks(dir_path: str):
     for folder in glob.glob(f"{dir_path}/script-0-*"):
         for bp in glob.glob(f"{folder}/*"):
             for instance in glob.glob(f"{bp}/*"):
-                output_file = f"{instance}/run1/runsolver.solver"
-                sat = check_sat(output_file)
-                output_file_split = output_file.split("/")
-                new_file_name = os.path.join(*output_file_split[-5:])
-                debug_dict[new_file_name] = sat
+                if os.path.isdir(f"{instance}/run1/"):
+                    debug_dict.update(get_sat(instance))
+                else:
+                    for inst in glob.glob(f"{instance}/*"):
+                        debug_dict.update(get_sat(inst))
+
     return debug_dict
+
+def get_sat(path):
+    output_file = f"{path}/run1/runsolver.solver"
+    sat = check_sat(output_file)
+    output_file_split = output_file.split("/")
+    new_file_name = os.path.join(*output_file_split[-5:])
+    return {new_file_name: sat}
 
 def check_sat(path: str):
     if not os.path.isfile(path):
         raise FileNotFoundError(f"{path} does not exist!!")
-    
+
     with open(path, "r") as file:
         lines = file.readlines()
         for line in lines:
@@ -58,7 +66,8 @@ def verify_all_instances(solver_output: Tuple[Tuple, Tuple]):
     
     for output_file in solver_1_output:
         if not all((solver_1_output[output_file], solver_2_output[output_file])):
-            raise ValueError("The values must only be SAT or UNSAT !!")
+            non_match_file.write(f"{output_file}, {solver_1_output[output_file]}, {solver_2_output[output_file]}\n")
+            print(f"{output_file} did not return any output !!")
         elif solver_1_output[output_file] == solver_2_output[output_file]:
             match_file.write(f"{output_file}, {solver_1_output[output_file]}, {solver_2_output[output_file]}\n")
         else:

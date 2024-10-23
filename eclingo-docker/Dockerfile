@@ -42,11 +42,11 @@ RUN echo "conda activate eclingo_reif" >> /root/.bashrc \
     && pip install . \
     && cd .. \
     && rm -r eclingo \
+    && git clone https://github.com/potassco/eclingo.git \
     && ./run.sh eclingo --max-instances=2 --benchmark=yale > log.txt
 
 RUN echo "conda activate eclingo_old" >> /root/.bashrc \
     && . /root/.bashrc \
-    && git clone https://github.com/potassco/eclingo.git \
     && cd eclingo/ \
     && pip install . \
     && cd .. \

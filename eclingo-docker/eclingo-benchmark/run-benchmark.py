@@ -429,9 +429,9 @@ def prepare_benchmarks():
                     # pass
                 elif os.path.basename(benchmark_path) == "action-reversibility":
                     if benchmark == "all" or "reversibility" in benchmark:
-                        # print("Working on ACTION Problems")
-                        # prepare_benchmark_action(benchmark_path, max_instances)
-                        pass
+                        print("Working on ACTION Problems")
+                        prepare_benchmark_action(benchmark_path, max_instances)
+                        # pass
                 elif os.path.basename(benchmark_path) == "eligible":
                     if benchmark == "all" or "eligible" in benchmark:
                         print("Working on ELIGIBLE Problems")

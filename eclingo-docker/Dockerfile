@@ -30,11 +30,11 @@ WORKDIR /root/eclingo-benchmark/
 # set bash (interactive) as the default shell
 # SHELL ["/bin/bash", "-i", "-c"]
 
-# create and activate conda env reif, install eclingo new and run benchmark
+# create conda environments
 RUN /root/miniconda3/bin/conda env create -f envs/environment_eclingo_reif.yml
-# create and activate conda env old, install eclingo old and run benchmark
 RUN /root/miniconda3/bin/conda env create -f envs/environment_eclingo_old.yml
 
+# activate eclingo_reif conda environment, install eclingo new and run benchmark
 RUN echo "conda activate eclingo_reif" >> /root/.bashrc \
     && . /root/.bashrc \
     && git clone https://github.com/jorgefandinno/eclingo.git \
@@ -45,6 +45,7 @@ RUN echo "conda activate eclingo_reif" >> /root/.bashrc \
     && git clone https://github.com/potassco/eclingo.git \
     && ./run.sh eclingo --max-instances=2 --benchmark=yale > log.txt
 
+# activate eclingo_old conda environment, install eclingo old and run benchmark
 RUN echo "conda activate eclingo_old" >> /root/.bashrc \
     && . /root/.bashrc \
     && cd eclingo/ \

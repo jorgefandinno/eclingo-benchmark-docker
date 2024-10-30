@@ -63,11 +63,11 @@ def verify_all_instances(solver_output: Tuple[Tuple, Tuple]):
 
     match_file = open_file("matching_instances.txt", (solver_1, solver_2))
     non_match_file = open_file("non_matching_instances.txt", (solver_1, solver_2))
+    timed_out_file = open_file("timed_out_instances.txt", (solver_1, solver_2))
     
     for output_file in solver_1_output:
         if not all((solver_1_output[output_file], solver_2_output[output_file])):
-            non_match_file.write(f"{output_file}, {solver_1_output[output_file]}, {solver_2_output[output_file]}\n")
-            print(f"{output_file} did not return any output !!")
+            timed_out_file.write(f"{output_file}, {solver_1_output[output_file]}, {solver_2_output[output_file]}\n")
         elif solver_1_output[output_file] == solver_2_output[output_file]:
             match_file.write(f"{output_file}, {solver_1_output[output_file]}, {solver_2_output[output_file]}\n")
         else:
@@ -76,6 +76,7 @@ def verify_all_instances(solver_output: Tuple[Tuple, Tuple]):
     
     match_file.close()
     non_match_file.close()
+    timed_out_file.close()
 
 def open_file(file_name: str, solvers: Tuple[str, str]):
     file = open(file_name, "w")

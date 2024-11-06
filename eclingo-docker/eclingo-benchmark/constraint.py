@@ -10,28 +10,23 @@ def check_output(solver_1: str) -> bool:
     Checks the satisfiability output for the solvers
     """
     df = pd.read_csv("matching_instances.txt")
-    df = df[df[" eclingo"] == " SAT"]
+    df = df[df["eclingo"] == "SAT"]
     for solver_file in df.Instance:
         solver_split = solver_file.split("/")
+        filepath = "/".join(solver_split[1:-2])
 
-        if solver_split[-5].startswith("script"):
-            filepath = "/".join(solver_split[-4:-2]) 
-        elif solver_split[-6].startswith("script"):
-            filepath = "/".join(solver_split[-5:-2]) 
-        else:
-            filepath = solver_split[-3]
-
-        filename = copy_instance(filepath)
+        filename = copy_instance(filepath, solver_1)
         answer_set = get_answer_set(solver_1, solver_file)
         as_atoms = answer_set.split()
+        
         constraints = prepare_constraints(as_atoms)
         with open(filename, "a") as file:
             file.writelines(constraints)
 
-def copy_instance(filepath):
-    instance_path = os.path.join(os.getcwd(), "running/benchmark-tool-{solver_1}/experiments/instances", filepath)
+def copy_instance(filepath, solver_1):
+    instance_path = os.path.join(os.getcwd(), f"running/benchmark-tool-{solver_1}/experiments/instances", filepath)
     os.makedirs("temp_instances", exist_ok=True)
-    filename = shutil.copy(instance_path, os.path.join("temp_instances", os.path.split()[-1]))
+    filename = shutil.copy(instance_path, os.path.join("temp_instances", os.path.split(filepath)[-1]))
     return filename
 
 def get_answer_set(solver_1, solver_file):
@@ -46,7 +41,7 @@ def get_answer_set(solver_1, solver_file):
 def prepare_constraints(atoms):
     constraints = []
     for atom in atoms:
-        constraints.append(f":- not {atom}.")
+        constraints.append(f":- not {atom}.\n")
     return constraints
 
 def main():

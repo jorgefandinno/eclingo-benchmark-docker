@@ -67,11 +67,11 @@ def verify_all_instances(solver_output: Tuple[Tuple, Tuple]):
     
     for output_file in solver_1_output:
         if not all((solver_1_output[output_file], solver_2_output[output_file])):
-            timed_out_file.write(f"{output_file}, {solver_1_output[output_file]}, {solver_2_output[output_file]}\n")
+            timed_out_file.write(f"{output_file},{solver_1_output[output_file]},{solver_2_output[output_file]}\n")
         elif solver_1_output[output_file] == solver_2_output[output_file]:
-            match_file.write(f"{output_file}, {solver_1_output[output_file]}, {solver_2_output[output_file]}\n")
+            match_file.write(f"{output_file},{solver_1_output[output_file]},{solver_2_output[output_file]}\n")
         else:
-            non_match_file.write(f"{output_file}, {solver_1_output[output_file]}, {solver_2_output[output_file]}\n")
+            non_match_file.write(f"{output_file},{solver_1_output[output_file]},{solver_2_output[output_file]}\n")
             print(f"{output_file} not verified!!")
     
     match_file.close()
@@ -81,7 +81,7 @@ def verify_all_instances(solver_output: Tuple[Tuple, Tuple]):
 def open_file(file_name: str, solvers: Tuple[str, str]):
     file = open(file_name, "w")
     solver_1, solver_2 = solvers
-    file.write(f"Instance, {solver_1}, {solver_2}\n")
+    file.write(f"Instance,{solver_1},{solver_2}\n")
     return file
 
 def create_answer_set(path):

@@ -1,13 +1,13 @@
 ### Build EZSMT dockerfile:
 ```
 cd eclingo-benchmark-docker/ezsmt-docker
-docker build -t <image-name:tag> .
+docker build -t ezsmt .
 ```
 
 ### Command to run the docker container:
 ```
 # -i for interactive, -t for terminal
-docker run -it <image-name:tag>
+docker run -it ezsmt
 ```
 
 ### EZSMT Description:

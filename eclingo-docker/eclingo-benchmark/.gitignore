@@ -6,3 +6,4 @@ problem-selection/problems.txt
 running/
 temp_instances/
 *_instances*
+*.txt

@@ -37,7 +37,12 @@ def get_sat(path):
     output_file = f"{path}/run1/runsolver.solver"
     sat = check_sat(output_file)
     output_file_split = output_file.split("/")
-    new_file_name = os.path.join(*output_file_split[-5:])
+
+    if output_file_split[-6].startswith("script"):
+        new_file_name = os.path.join(*output_file_split[-6:])
+    else:
+        new_file_name = os.path.join(*output_file_split[-5:])
+
     return {new_file_name: sat}
 
 def check_sat(path: str):

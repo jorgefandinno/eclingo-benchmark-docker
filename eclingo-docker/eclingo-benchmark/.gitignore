@@ -3,7 +3,9 @@ idlv/
 results/
 problem-selection/problems.txt
 */__pycache__
+__pycache__
 running/
 temp_instances/
 *_instances*
 *.txt
+xperiments/plot/

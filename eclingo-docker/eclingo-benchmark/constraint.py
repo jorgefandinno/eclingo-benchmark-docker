@@ -5,6 +5,12 @@ import shutil
 import pandas as pd
 
 
+def get_as_atoms(answer_set, delimiter=None):
+    if delimiter is None:
+        return [atom.strip() for atom in answer_set.split() if atom]
+    else:
+        return [delimiter+atom.strip() for atom in answer_set.split("&") if atom]
+
 def check_output(solver: str) -> bool:
     """
     Checks the satisfiability output for the solvers
@@ -17,7 +23,7 @@ def check_output(solver: str) -> bool:
 
         filename = copy_instance(filepath, solver)
         answer_set = get_answer_set(solver, solver_file)
-        as_atoms = answer_set.split()
+        as_atoms = get_as_atoms(answer_set)
         with open(f"{filename}_answer_set.txt", "w") as file:
             file.writelines(map(lambda x: x + "\n", as_atoms))
         

@@ -1,10 +1,17 @@
 import gc
-import re
 import subprocess
 
 import pandas as pd
 
 from verify import check_sat
+from constraint_utils import (
+    prepare_constraints, 
+    get_as_atoms, 
+    write_to_file,
+    get_answer_set_path,
+    get_constraints_path,
+    replace_constraints
+)
 
 
 def prepare_instance_paths(df):
@@ -17,12 +24,6 @@ def prepare_instance_paths(df):
         paths.append(filename)
     return paths
 
-def get_answer_set_path(path):
-    return path + "_answer_set.txt"
-
-def get_constraints_path(path):
-    return path + "_constraints.lp"
-
 def get_new_answer_set(line_index, path=None):
     if path is None:
         path = "output.txt"
@@ -31,12 +32,6 @@ def get_new_answer_set(line_index, path=None):
         answer_set = lines[line_index]
     return answer_set
 
-def get_as_atoms(answer_set, delimiter=None):
-    if delimiter is None:
-        return [re.sub(" ", "", atom.strip()) for atom in answer_set.split() if atom]
-    else:
-        return [re.sub(" ", "", delimiter+atom.strip()) for atom in answer_set.split("&") if atom]
-
 
 def add_constraints(new_answer_set, path, delimiter=None):
     new_as_atoms = set(get_as_atoms(new_answer_set, delimiter))
@@ -44,19 +39,22 @@ def add_constraints(new_answer_set, path, delimiter=None):
     old_answer_set_path = get_answer_set_path(path)
     with open(old_answer_set_path, "r") as file:
         old_answer_set = file.read()
-    
     old_as_atoms = set(get_as_atoms(old_answer_set, delimiter))
-
+    
     new_atoms = new_as_atoms - old_as_atoms
+
     if not new_atoms:
         print("Same answer set achieved.")
         return False
     
     constraint_path = get_constraints_path(path)
-    with open(constraint_path, "a") as file:
-        for atom in new_atoms:
-            file.write(f":- {atom}.\n")
-    
+    new_atoms = replace_constraints(constraint_path, new_atoms)
+    constraints = prepare_constraints(new_atoms, negative=False)
+    if not constraints:
+        print("Same answer set achieved.")
+        return False
+
+    write_to_file(constraint_path, constraints)
     return True
 
 
@@ -64,11 +62,10 @@ def main():
     df = pd.read_csv("matching_instances.txt")
     df = df[df["eclingo"] == "SAT"]
 
-    instace_paths = prepare_instance_paths(df)
-    for path in instace_paths:
+    instance_paths = prepare_instance_paths(df)
+    for path in instance_paths:
+
         print(path)
-        # if not path.startswith("temp_instances/yale"):
-        #     continue
 
         while True:
             command = f"eclingo {path} {get_constraints_path(path)}"
@@ -88,8 +85,6 @@ def main():
             answer_set = get_new_answer_set(line_index=3)
             if not add_constraints(answer_set, path, delimiter="&"):
                 break
-        
-        break
 
     print("Done.")
 

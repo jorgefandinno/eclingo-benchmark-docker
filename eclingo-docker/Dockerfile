@@ -52,4 +52,4 @@ RUN echo "conda activate eclingo_old" >> /root/.bashrc \
     && pip install . \
     && cd .. \
     && ./run.sh eclingo-old --max-instances=2 --benchmark=yale >> log.txt \
-    && python verify.py 
+    && python verify_satisfiability.py 

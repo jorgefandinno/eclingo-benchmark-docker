@@ -2,6 +2,7 @@ import os
 import glob
 
 from typing import Tuple
+from constraint_utils import check_sat
 
 
 def check_output(solver_1: str, solver_2: str) -> bool:
@@ -44,19 +45,6 @@ def get_sat(path):
         new_file_name = os.path.join(*output_file_split[-5:])
 
     return {new_file_name: sat}
-
-def check_sat(path: str):
-    if not os.path.isfile(path):
-        raise FileNotFoundError(f"{path} does not exist!!")
-
-    with open(path, "r") as file:
-        lines = file.readlines()
-        for line in lines:
-            if line.startswith(("SAT", "SATISFIABLE")):
-                return "SAT"
-            elif line.startswith(("UNSAT", "UNSATISFIABLE")):
-                return "UNSAT"
-        return None
 
 def verify_all_instances(solver_output: Tuple[Tuple, Tuple]):
     ((solver_1, solver_1_output), (solver_2, solver_2_output)) = solver_output

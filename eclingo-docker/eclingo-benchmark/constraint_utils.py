@@ -8,6 +8,19 @@ def get_answer_set_path(path):
 def get_constraints_path(path):
     return path + "_constraints.lp"
 
+def check_sat(path: str):
+    if not os.path.isfile(path):
+        raise FileNotFoundError(f"{path} does not exist!!")
+
+    with open(path, "r") as file:
+        lines = file.readlines()
+        for line in lines:
+            if line.startswith(("SAT", "SATISFIABLE")):
+                return "SAT"
+            elif line.startswith(("UNSAT", "UNSATISFIABLE")):
+                return "UNSAT"
+        return None
+
 def prepare_constraints(atoms: List[str], negative: bool=True):
     constraints = []
     for atom in atoms:
@@ -51,7 +64,10 @@ def replace_constraints(filepath, new_atoms):
 
 def write_to_file(filepath, write_list, new_line=True, replace=False):
     if replace:
-        os.remove(filepath)
+        try:
+            os.remove(filepath)
+        except FileNotFoundError:
+            pass
 
     with open(filepath, "a") as file:
         if new_line:

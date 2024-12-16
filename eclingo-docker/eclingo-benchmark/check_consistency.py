@@ -3,8 +3,8 @@ import subprocess
 
 import pandas as pd
 
-from verify import check_sat
 from constraint_utils import (
+    check_sat,
     prepare_constraints, 
     get_as_atoms, 
     write_to_file,

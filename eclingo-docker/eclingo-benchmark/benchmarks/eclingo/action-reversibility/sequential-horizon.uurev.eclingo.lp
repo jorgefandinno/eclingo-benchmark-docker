@@ -79,5 +79,5 @@ noreversal :- holds(V, Val, H+1), not holds(V, Val, 0), horizon(H).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#show chosen/1.
-#show plan/2.
+%#show chosen/1.
+%#show plan/2.

@@ -53,5 +53,5 @@ holds(V, Val, T) :- holds(V, Val, T - 1), not modified(V, T), time(T).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#show chosen/1.
-#show plan/2.
+%#show chosen/1.
+%#show plan/2.

@@ -155,3 +155,30 @@ def prepare_benchmark_eligible_eclingo(benchmark_path, BENCHMARK_RUNNING, max_in
             
             # print(encoding_path, instance_path, output_path)
             os.system(f"cat {encoding_path} {instance_path}  > {output_path}")
+
+def prepare_eclingo_benchmarks(benchmark, benchmark_origin, BENCHMARK_RUNNING, max_instances):
+    print(f"\nUsing solver: Eclingo")
+    for benchmark_path in os.listdir(benchmark_origin):
+        benchmark_path = os.path.join(benchmark_origin, benchmark_path)
+        if os.path.isdir(benchmark_path):
+
+            if os.path.basename(benchmark_path) == "bomb_problems":
+                if benchmark == "all" or "bomb" in benchmark:
+                    print("Working on BOMB Problems")
+                    prepare_benchmark_bomb(benchmark_path, BENCHMARK_RUNNING, max_instances)
+                # pass
+            elif os.path.basename(benchmark_path) == "action-reversibility":
+                if benchmark == "all" or "reversibility" in benchmark:
+                    print("Working on ACTION Problems")
+                    prepare_benchmark_action(benchmark_path, BENCHMARK_RUNNING, max_instances)
+                    # pass
+            elif os.path.basename(benchmark_path) == "eligible":
+                if benchmark == "all" or "eligible" in benchmark:
+                    print("Working on ELIGIBLE Problems")
+                    prepare_benchmark_eligible_eclingo(benchmark_path, BENCHMARK_RUNNING, max_instances)
+                    # pass
+            else:
+                if benchmark == "all" or "yale" in benchmark:
+                    print("Working on YALE Problems")
+                    prepare_benchmark_yale(benchmark_path, BENCHMARK_RUNNING, max_instances)
+                    # pass

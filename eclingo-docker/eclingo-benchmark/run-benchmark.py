@@ -3,12 +3,7 @@ import os
 
 import benchmark_runner
 
-from prepare_benchmarks.eclingo_benchmarks import (
-    prepare_benchmark_bomb,
-    prepare_benchmark_action,
-    prepare_benchmark_eligible_eclingo,
-    prepare_benchmark_yale,
-)
+from prepare_benchmarks.eclingo_benchmarks import prepare_eclingo_benchmarks
 
 IDLV = "idlv/idlv"
 
@@ -266,31 +261,7 @@ def prepare_benchmarks():
         raise ValueError(f"The value for max_instances argument must be an integer !!")
    
     if command_dir == "eclingo" or command_dir == "eclingo-old":
-        print(f"\nUsing solver: Eclingo")
-        for benchmark_path in os.listdir(benchmark_origin):
-            benchmark_path = os.path.join(benchmark_origin, benchmark_path)
-            if os.path.isdir(benchmark_path):
-
-                if os.path.basename(benchmark_path) == "bomb_problems":
-                    if benchmark == "all" or "bomb" in benchmark:
-                        print("Working on BOMB Problems")
-                        prepare_benchmark_bomb(benchmark_path, BENCHMARK_RUNNING, max_instances)
-                    # pass
-                elif os.path.basename(benchmark_path) == "action-reversibility":
-                    if benchmark == "all" or "reversibility" in benchmark:
-                        print("Working on ACTION Problems")
-                        prepare_benchmark_action(benchmark_path, BENCHMARK_RUNNING, max_instances)
-                        # pass
-                elif os.path.basename(benchmark_path) == "eligible":
-                    if benchmark == "all" or "eligible" in benchmark:
-                        print("Working on ELIGIBLE Problems")
-                        prepare_benchmark_eligible_eclingo(benchmark_path, BENCHMARK_RUNNING, max_instances)
-                        # pass
-                else:
-                    if benchmark == "all" or "yale" in benchmark:
-                        print("Working on YALE Problems")
-                        prepare_benchmark_yale(benchmark_path, BENCHMARK_RUNNING, max_instances)
-                        # pass
+        prepare_eclingo_benchmarks(benchmark, benchmark_origin, BENCHMARK_RUNNING, max_instances)
                 
     elif command_dir == "ep_asp":
         print(f"\nUsing solver: EP-ASP")

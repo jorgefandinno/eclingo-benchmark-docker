@@ -156,7 +156,7 @@ def prepare_benchmark_eligible_eclingo(benchmark_path, BENCHMARK_RUNNING, max_in
             # print(encoding_path, instance_path, output_path)
             os.system(f"cat {encoding_path} {instance_path}  > {output_path}")
 
-def prepare_eclingo_benchmarks(benchmark, benchmark_origin, BENCHMARK_RUNNING, max_instances):
+def prepare_benchmarks_eclingo(benchmark, benchmark_origin, BENCHMARK_RUNNING, max_instances):
     print(f"\nUsing solver: Eclingo")
     for benchmark_path in os.listdir(benchmark_origin):
         benchmark_path = os.path.join(benchmark_origin, benchmark_path)

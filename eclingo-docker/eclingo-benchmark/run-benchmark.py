@@ -7,7 +7,8 @@ from prepare_benchmarks import (
     prepare_benchmarks_eclingo,
     prepare_benchmarks_ep_asp,
     prepare_benchmarks_selp,
-    prepare_benchmarks_qasp
+    prepare_benchmarks_qasp,
+    prepare_any_benchmarks,
 )
 
 IDLV = "idlv/idlv"
@@ -21,11 +22,13 @@ COMMANDS = {"eclingo-old": f"eclingo $@\n\n",
             "ep_asp":  f"bash \"$@\"\n\n",
             "ep_asp_no_planning":  f"bash \"$@\"\n\n",
             "selp":    f"bash \"$@\"\n\n",
-            "qasp":    f"bash \"$@\"\n\n"}
+            "qasp":    f"bash \"$@\"\n\n",
+            "ezsmt": f"ezsmt $@\n\n",
+        }
 
 SHOW_COMMAND_GROUNDERS = {"show-gringo", "show-idlv"}
 
-COMMAND_GROUNDERS = {"eclingo-old", "eclingo", "ep_asp", "ep_asp_no_planning", "selp", "qasp"}
+COMMAND_GROUNDERS = {"eclingo-old", "eclingo", "ep_asp", "ep_asp_no_planning", "selp", "qasp", "ezsmt"}
 
 BENCHMARK_ORIGIN = {}
 
@@ -87,6 +90,9 @@ def prepare_benchmarks():
                     
     elif command_dir == "qasp":
         prepare_benchmarks_qasp(benchmark_origin, BENCHMARK_RUNNING)
+    
+    elif command_dir == "ezsmt":
+        prepare_any_benchmarks(benchmark, benchmark_origin, BENCHMARK_RUNNING, max_instances)
                 
                 
 def grounder_solver(solver_file):

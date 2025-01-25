@@ -43,15 +43,16 @@ RUN echo "conda activate eclingo_reif" >> /root/.bashrc \
     && cd .. \
     && rm -r eclingo \
     && git clone https://github.com/potassco/eclingo.git \
-    && ./run.sh eclingo --max-instances=2 --benchmark=yale > log.txt
+    && ./run.sh eclingo --max-instances=2 --benchmark=all > log.txt
 
 # activate eclingo_old conda environment, install eclingo old and run benchmark
 RUN echo "conda activate eclingo_old" >> /root/.bashrc \
     && . /root/.bashrc \
     && cd eclingo/ \
+    && git checkout tags/v0.2.1 \
     && pip install . \
     && cd .. \
-    && ./run.sh eclingo-old --max-instances=2 --benchmark=yale >> log.txt \
-    && python check_satisfiability.py \
-    && python add_constraints.py \
-    && python check_consistency.py
+    && ./run.sh eclingo-old --max-instances=2 --benchmark=all >> log.txt \
+    && python check_satisfiability.py >> log.txt\
+    && python add_constraints.py >> log.txt\
+    && python check_consistency.py >> log.txt

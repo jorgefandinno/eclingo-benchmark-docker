@@ -2,3 +2,4 @@ from .eclingo_benchmarks import prepare_benchmarks_eclingo
 from .ep_asp_benchmarks import prepare_benchmarks_ep_asp
 from .selp_benchmarks import prepare_benchmarks_selp
 from .qasp_benchmarks import prepare_benchmarks_qasp
+from .generic_benchmarks import prepare_any_benchmarks

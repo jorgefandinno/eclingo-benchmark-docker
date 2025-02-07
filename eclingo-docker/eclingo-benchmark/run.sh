@@ -10,7 +10,7 @@ current_dir=$(pwd)
 # qasp                  -> Run elp2qasp solver.
 
 # Define a list of valid arguments
-VALID_ARGS=("eclingo-old" "eclingo" "ep_asp" "ep_asp_no_planning" "selp" "qasp" "ezsmt")
+VALID_ARGS=("eclingo-old" "eclingo" "ep_asp" "ep_asp_no_planning" "selp" "qasp" "ezsmt" "clingcon")
 
 # Check if an argument is provided
 if [ -z "$1" ]; then

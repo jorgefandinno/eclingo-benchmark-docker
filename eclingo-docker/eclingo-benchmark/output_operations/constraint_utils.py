@@ -2,6 +2,12 @@ import os
 
 from typing import List
 
+match_files = (
+    "matching_instances.txt",
+    "non_matching_instances.txt",
+    "timed_out_instances.txt"
+)
+
 def get_answer_set_path(path):
     return path + "_answer_set.txt"
 

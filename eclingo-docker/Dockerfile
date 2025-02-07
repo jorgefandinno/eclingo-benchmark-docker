@@ -53,6 +53,4 @@ RUN echo "conda activate eclingo_old" >> /root/.bashrc \
     && pip install . \
     && cd .. \
     && ./run.sh eclingo-old --max-instances=2 --benchmark=all >> log.txt \
-    && python check_satisfiability.py >> log.txt\
-    && python add_constraints.py >> log.txt\
-    && python check_consistency.py >> log.txt
+    && python examine_output.py -s1 eclingo -s2 eclingo -s2n eclingo-old -l 10 >> log.txt

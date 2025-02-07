@@ -1,3 +1,4 @@
 *.log
 .DS*
 boost_1_79*
+*.smt2

@@ -2,21 +2,19 @@ import os
 import glob
 
 from typing import Tuple
-from constraint_utils import check_sat
+
+from .constraint_utils import match_files, check_sat
 
 
-def check_output(solver_1: str, solver_2: str) -> bool:
+def check_output_satisfiability(solver_1: str, solver_2: str, s1_results_path: str, s2_results_path: str) -> bool:
     """
     Checks the satisfiability output for the solvers
     """
-    dir_path_1 = f"running/benchmark-tool-{solver_1}/output/project/zuse/results/suite/"
-    dir_path_2 = f"running/benchmark-tool-{solver_2}/output/project/zuse/results/suite/"
-    
-    solver_1_output = get_all_sat_checks(dir_path_1)
-    solver_2_output = get_all_sat_checks(dir_path_2)
+    solver_1_output = get_all_sat_checks(s1_results_path)
+    solver_2_output = get_all_sat_checks(s2_results_path)
 
     solver_output = ((solver_1, solver_1_output), (solver_2, solver_2_output))
-    verify_all_instances(solver_output)
+    check_all_instances(solver_output, match_files)
 
 def get_all_sat_checks(dir_path: str):
     if not os.path.isdir(dir_path):
@@ -36,6 +34,9 @@ def get_all_sat_checks(dir_path: str):
 
 def get_sat(path):
     output_file = f"{path}/run1/runsolver.solver"
+    if not os.path.exists(output_file):
+        return {}
+    
     sat = check_sat(output_file)
     output_file_split = output_file.split("/")
 
@@ -46,17 +47,19 @@ def get_sat(path):
 
     return {new_file_name: sat}
 
-def verify_all_instances(solver_output: Tuple[Tuple, Tuple]):
+def check_all_instances(solver_output: Tuple[Tuple, Tuple], match_files: Tuple):
     ((solver_1, solver_1_output), (solver_2, solver_2_output)) = solver_output
 
     if solver_1_output == solver_2_output:
         print("Output is consistent across both solvers.")
     else:
+        print(solver_1_output)
+        print(solver_2_output)
         print("Output is not consistent !!")
 
-    match_file = open_file("matching_instances.txt", (solver_1, solver_2))
-    non_match_file = open_file("non_matching_instances.txt", (solver_1, solver_2))
-    timed_out_file = open_file("timed_out_instances.txt", (solver_1, solver_2))
+    match_file = open_file(match_files[0], (solver_1, solver_2))
+    non_match_file = open_file(match_files[1], (solver_1, solver_2))
+    timed_out_file = open_file(match_files[2], (solver_1, solver_2))
     
     for output_file in solver_1_output:
         if not all((solver_1_output[output_file], solver_2_output[output_file])):
@@ -77,24 +80,3 @@ def open_file(file_name: str, solvers: Tuple[str, str]):
     file.write(f"Instance,{solver_1},{solver_2}\n")
     return file
 
-def create_answer_set(path):
-    if not os.path.isfile(path):
-        raise FileNotFoundError(f"{path} does not exist!!")
-    
-    read_file = open(path, "r")
-    lines = read_file.readlines()
-    read_file.close()
-    answer_set = lines[11]
-    write_file = open("program_ext.lp", "w")
-    as_split = answer_set.split()
-    for atom in as_split:
-        write_file.write(f":- not {atom}.\n")
-    write_file.close()
-
-def main():
-    solver_1 = "eclingo"
-    solver_2 = "eclingo-old"
-    check_output(solver_1, solver_2)
-
-if __name__ == "__main__":
-    main()

@@ -3,7 +3,8 @@ import subprocess
 
 import pandas as pd
 
-from constraint_utils import (
+from .constraint_utils import (
+    match_files,
     check_sat,
     prepare_constraints, 
     get_as_atoms, 
@@ -58,9 +59,9 @@ def add_constraints(new_answer_set, path, delimiter=None):
     return True
 
 
-def main():
-    df = pd.read_csv("matching_instances.txt")
-    df = df[df["eclingo"] == "SAT"]
+def check_output_consistency(s2_name, solver_2):
+    df = pd.read_csv(match_files[0])
+    df = df[df[s2_name] == "SAT"]
 
     instance_paths = prepare_instance_paths(df)
     for path in instance_paths:
@@ -68,7 +69,7 @@ def main():
         print(path)
 
         while True:
-            command = f"eclingo {path} {get_constraints_path(path)}"
+            command = f"{solver_2} {path} {get_constraints_path(path)}"
 
             output_file = open("output.txt", "w")
             error_file = open("error.txt", "w")
@@ -86,7 +87,3 @@ def main():
             if not add_constraints(answer_set, path, delimiter="&"):
                 break
 
-    print("Done.")
-
-if __name__ == "__main__":
-    main()

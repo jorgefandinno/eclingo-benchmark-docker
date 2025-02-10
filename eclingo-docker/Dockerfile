@@ -43,6 +43,7 @@ RUN echo "conda activate eclingo_reif" >> /root/.bashrc \
     && cd .. \
     && rm -r eclingo \
     && git clone https://github.com/potassco/eclingo.git \
+    && echo "Running eclingo_reif benchmarks" \
     && ./run.sh eclingo --max-instances=2 --benchmark=all > log.txt
 
 # activate eclingo_old conda environment, install eclingo old and run benchmark
@@ -52,5 +53,6 @@ RUN echo "conda activate eclingo_old" >> /root/.bashrc \
     && git checkout tags/v0.2.1 \
     && pip install . \
     && cd .. \
+    && echo "Running eclingo_old benchmarks" \
     && ./run.sh eclingo-old --max-instances=2 --benchmark=all >> log.txt \
     && python examine_output.py -s1 eclingo -s2 eclingo -s2n eclingo-old -l 10 >> log.txt

@@ -34,23 +34,48 @@ WORKDIR /root/eclingo-benchmark/
 RUN /root/miniconda3/bin/conda env create -f envs/environment_eclingo_reif.yml
 RUN /root/miniconda3/bin/conda env create -f envs/environment_eclingo_old.yml
 
-# activate eclingo_reif conda environment, install eclingo new and run benchmark
-RUN echo "conda activate eclingo_reif" >> /root/.bashrc \
-    && . /root/.bashrc \
+# add miniconda3 to the path
+ENV PATH=/root/miniconda3/bin:$PATH
+
+# activate eclingo_reif conda environment, install eclingo new
+RUN eval "$(conda shell.bash hook)" \
+    && conda activate eclingo_reif \
     && git clone https://github.com/jorgefandinno/eclingo.git \
     && cd eclingo/ \
-    && pip install . \
-    && cd .. \
-    && rm -r eclingo \
-    && git clone https://github.com/potassco/eclingo.git \
-    && ./run.sh eclingo --max-instances=2 --benchmark=all > log.txt
+    && pip install .  
 
 # activate eclingo_old conda environment, install eclingo old and run benchmark
-RUN echo "conda activate eclingo_old" >> /root/.bashrc \
-    && . /root/.bashrc \
+RUN eval "$(conda shell.bash hook)" \
+    && conda activate eclingo_old \
+    && rm -r eclingo \
+    && git clone https://github.com/potassco/eclingo.git \
     && cd eclingo/ \
     && git checkout tags/v0.2.1 \
-    && pip install . \
-    && cd .. \
-    && ./run.sh eclingo-old --max-instances=2 --benchmark=all >> log.txt \
-    && python examine_output.py -s1 eclingo -s2 eclingo -s2n eclingo-old -l 10 >> log.txt
+    && pip install . 
+
+# copy setup bash file to image
+COPY setup.sh .
+
+# setup environment variables
+ENV solver1=eclingo
+ENV solver2=eclingo
+ENV solver2_name=eclingo-old
+ENV max_instances=2
+ENV benchmark=yale
+ENV line_number=10
+
+# Adding below line escapes dollar sign with backward slash
+# escape=`
+RUN echo "\nconda activate eclingo_reif \n\
+./run.sh \${solver1} --max-instances=\${max_instances} --benchmark=\${benchmark} \n\
+conda activate eclingo_old \n\
+./run.sh \${solver2_name} --max-instances=\${max_instances} --benchmark=\${benchmark} \n\
+python examine_output.py -s1 \${solver1} -s2 \${solver2} -s2n \${solver2_name} -l \${line_number}" >> setup.sh
+
+ENTRYPOINT ["/bin/bash", "-c"]
+
+# CMD ["./setup.sh", "--solver1=${solver1}", "--solver2=${solver2}", "--solver2_name=${solver2_name}", \
+#     "--max_instances=${max_instances}", "--benchmark=${benchmark}", "--line_number=${line_number}"]
+
+CMD ["./setup.sh --solver1=${solver1} --solver2=${solver2} --solver2_name=${solver2_name} \
+    --max_instances=${max_instances} --benchmark=${benchmark} --line_number=${line_number}"]

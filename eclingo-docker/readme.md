@@ -12,6 +12,9 @@ docker build -t <image-name:tag> .
 
 ### Command to run the docker container:
 ```
+# -e is flag for overwriting environment variable
+docker run [-e <variable-name>=<value>] <image-name:tag>
+
 # -i for interactive, -t for terminal
 docker run -it <image-name:tag>
 ```

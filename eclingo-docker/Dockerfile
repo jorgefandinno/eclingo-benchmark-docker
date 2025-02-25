@@ -7,8 +7,21 @@ LABEL description="This is a custom Docker Image for benchmarking solvers for Ep
 # Disable Prompt During Packages Installation
 ARG DEBIAN_FRONTEND=noninteractive
 
+# setup environment variables
+ENV solver1=eclingo
+ENV solver2=eclingo
+ENV solver2_name=eclingo-old
+ENV max_instances=2
+ENV benchmark=yale
+ENV line_number=10
+ENV conda_env_file_path_1=envs/environment_eclingo_reif.yml
+ENV env_name_1=eclingo_reif
+ENV conda_env_file_path_2=envs/environment_eclingo_old.yml
+ENV env_name_2=eclingo_old
+
 # Update Ubuntu Software repository
 RUN apt update
+
 # Install conda
 WORKDIR /root/
 RUN apt install -y wget
@@ -22,6 +35,9 @@ RUN bash /root/miniconda3/miniconda.sh -b -u -p /root/miniconda3
 RUN rm -rf /root/miniconda3/miniconda.sh
 RUN /root/miniconda3/bin/conda init bash
 
+# add miniconda3 to the path
+ENV PATH=/root/miniconda3/bin:$PATH
+
 # Copy benchmark tool and create conda environment
 COPY eclingo-benchmark /root/eclingo-benchmark/
 WORKDIR /root/eclingo-benchmark/
@@ -31,22 +47,19 @@ WORKDIR /root/eclingo-benchmark/
 # SHELL ["/bin/bash", "-i", "-c"]
 
 # create conda environments
-RUN /root/miniconda3/bin/conda env create -f envs/environment_eclingo_reif.yml
-RUN /root/miniconda3/bin/conda env create -f envs/environment_eclingo_old.yml
-
-# add miniconda3 to the path
-ENV PATH=/root/miniconda3/bin:$PATH
+RUN conda env create -f ${conda_env_file_path_1}
+RUN conda env create -f ${conda_env_file_path_2}
 
 # activate eclingo_reif conda environment, install eclingo new
 RUN eval "$(conda shell.bash hook)" \
-    && conda activate eclingo_reif \
+    && conda activate ${env_name_1} \
     && git clone https://github.com/jorgefandinno/eclingo.git \
     && cd eclingo/ \
     && pip install .  
 
 # activate eclingo_old conda environment, install eclingo old and run benchmark
 RUN eval "$(conda shell.bash hook)" \
-    && conda activate eclingo_old \
+    && conda activate ${env_name_2} \
     && rm -r eclingo \
     && git clone https://github.com/potassco/eclingo.git \
     && cd eclingo/ \
@@ -56,26 +69,15 @@ RUN eval "$(conda shell.bash hook)" \
 # copy setup bash file to image
 COPY setup.sh .
 
-# setup environment variables
-ENV solver1=eclingo
-ENV solver2=eclingo
-ENV solver2_name=eclingo-old
-ENV max_instances=2
-ENV benchmark=yale
-ENV line_number=10
-
 # Adding below line escapes dollar sign with backward slash
 # escape=`
-RUN echo "\nconda activate eclingo_reif \n\
+RUN echo " \
+\nconda activate ${env_name_1} \n\
 ./run.sh \${solver1} --max-instances=\${max_instances} --benchmark=\${benchmark} \n\
-conda activate eclingo_old \n\
+conda activate ${env_name_2} \n\
 ./run.sh \${solver2_name} --max-instances=\${max_instances} --benchmark=\${benchmark} \n\
-python examine_output.py -s1 \${solver1} -s2 \${solver2} -s2n \${solver2_name} -l \${line_number}" >> setup.sh
+python examine_output.py -s1 \${solver1} -s2 \${solver2} -s2n \${solver2_name} -l \${line_number} \
+" >> setup.sh
 
 ENTRYPOINT ["/bin/bash", "-c"]
-
-# CMD ["./setup.sh", "--solver1=${solver1}", "--solver2=${solver2}", "--solver2_name=${solver2_name}", \
-#     "--max_instances=${max_instances}", "--benchmark=${benchmark}", "--line_number=${line_number}"]
-
-CMD ["./setup.sh --solver1=${solver1} --solver2=${solver2} --solver2_name=${solver2_name} \
-    --max_instances=${max_instances} --benchmark=${benchmark} --line_number=${line_number}"]
+CMD ["./setup.sh"]

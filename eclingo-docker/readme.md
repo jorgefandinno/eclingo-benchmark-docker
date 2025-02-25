@@ -16,7 +16,7 @@ docker build -t <image-name:tag> .
 docker run [-e <variable-name>=<value>] <image-name:tag>
 
 # -i for interactive, -t for terminal
-docker run -it <image-name:tag>
+docker run -it <image-name:tag> /bin/bash
 ```
 
 ### Command to save build logs to a log file

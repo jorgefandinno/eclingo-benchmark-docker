@@ -8,15 +8,18 @@ cd eclingo-benchmark-docker/eclingo-docker/
 ```
 # In directory with dockerfile
 docker build -t <image-name:tag> .
+docker build -t eclingo-benchmark .
 ```
 
 ### Command to run the docker container:
 ```
 # -e is flag for overwriting environment variable
 docker run [-e <variable-name>=<value>] <image-name:tag>
+docker run eclingo-benchmark 
 
 # -i for interactive, -t for terminal
 docker run -it <image-name:tag> /bin/bash
+docker run -it eclingo-benchmark /bin/bash
 ```
 
 ### Command to save build logs to a log file

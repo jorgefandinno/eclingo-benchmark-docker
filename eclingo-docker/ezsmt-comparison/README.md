@@ -7,15 +7,17 @@ _Make sure you are in the path: **eclingo-benchmark-docker/eclingo-docker/ezsmt-
 ```
 cd ..
 docker build -t <image-name:tag> -f ezsmt-comparison/Dockerfile .
+docker build -t ezsmt -f ezsmt-comparison/Dockerfile .
 ```
 
 
-**Running the image:**
+**Running the image container:**
 ```
-docker run -it <image-name:tag>
-```
+# -e is flag for overwriting environment variable
+docker run [-e <variable-name>=<value>] <image-name:tag>
+docker run ezsmt
 
-**Show the logs:**
-```
-cat log.txt
+# -i for interactive, -t for terminal
+docker run -it <image-name:tag> /bin/bash
+docker run -it ezsmt /bin/bash
 ```

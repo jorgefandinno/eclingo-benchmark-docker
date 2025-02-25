@@ -1,7 +1,16 @@
 FROM ubuntu:22.04
 
-RUN apt update
+# setup environment variables
+ENV solver1=ezsmt
+ENV solver2=clingcon
+ENV max_instances=2
+ENV benchmark=weighted-sequence
+ENV line_number=1
+ENV conda_env_file_path=envs/environment_ezsmt.yml
+ENV env_name=ezsmt
 
+# update and install required packages
+RUN apt update
 RUN apt install -y wget
 RUN apt install -y git
 RUN apt install -y cmake
@@ -10,8 +19,10 @@ RUN apt install -y software-properties-common
 RUN apt install -y python2
 RUN apt install -y libnuma-dev
 
+# set working directory
 WORKDIR /root/
 
+# download boost library package
 RUN wget https://archives.boost.io/release/1.79.0/source/boost_1_79_0.tar.bz2
 
 # install boost library
@@ -37,10 +48,9 @@ RUN cd ezsmt-uno \
     && cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug .. \
     && cmake --build . 
 
-# add tools and build directories to the PATH
-RUN echo 'PATH="/root/ezsmt-uno/tools:$PATH"' >> ~/.bashrc \
-    && echo 'PATH="/root/ezsmt-uno/build:$PATH"' >> ~/.bashrc \
-    && . ~/.bashrc
+# add ezsmt tools and build directories to the PATH
+ENV PATH=/root/ezsmt-uno/tools:$PATH
+ENV PATH=/root/ezsmt-uno/build:$PATH
 
 # copy benchmarking tool
 COPY eclingo-benchmark /root/eclingo-benchmark/
@@ -54,12 +64,23 @@ RUN bash /root/miniconda3/miniconda.sh -b -u -p /root/miniconda3
 RUN rm -rf /root/miniconda3/miniconda.sh
 RUN /root/miniconda3/bin/conda init bash
 
-# create conda environment for ezsmt
-RUN /root/miniconda3/bin/conda env create -f envs/environment_ezsmt.yml
+# add miniconda3 to the path
+ENV PATH=/root/miniconda3/bin:$PATH
 
-# activate conda env, run benchmark tool, and compare the outputs
-RUN echo "conda activate ezsmt" >> /root/.bashrc \
-    && . /root/.bashrc \
-    && ./run.sh ezsmt --max-instances=2 --benchmark=weighted-sequence > log.txt \
-    && ./run.sh clingcon --max-instances=2 --benchmark=weighted-sequence >> log.txt \
-    && python examine_output.py -s1 ezsmt -s2 clingcon -l 1 >> log.txt
+# create conda environment for ezsmt
+RUN conda env create -f ${conda_env_file_path}
+
+# copy setup bash file to image
+COPY setup.sh .
+
+# Adding below line escapes dollar sign with backward slash
+# escape=`
+RUN echo " \
+\nconda activate ${env_name} \n\
+./run.sh \${solver1} --max-instances=\${max_instances} --benchmark=\${benchmark} \n\
+./run.sh \${solver2} --max-instances=\${max_instances} --benchmark=\${benchmark} \n\
+python examine_output.py -s1 \${solver1} -s2 \${solver2} -l \${line_number} \
+" >> setup.sh
+
+ENTRYPOINT ["/bin/bash", "-c"]
+CMD ["./setup.sh"]

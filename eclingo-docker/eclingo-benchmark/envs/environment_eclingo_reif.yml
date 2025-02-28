@@ -34,6 +34,7 @@ dependencies:
       - et-xmlfile==1.1.0
       - exceptiongroup==1.2.0
       - executing==2.0.1
+      - ezodf==0.3.2
       - fonttools==4.51.0
       - importlib-resources==6.4.0
       - ipython==8.18.1

@@ -5,7 +5,7 @@
 
       <!-- SET DIFFERENT CONFIGURATIONS /-->
       <setting name="one"   tag="doit" command="solver.sh" options="" />
-      <!-- <setting name="two"   tag="doit" command="solver.sh" options="" /> -->
+      <setting name="two"   tag="doit" command="solver.sh" options="" />
 
     </system>
 

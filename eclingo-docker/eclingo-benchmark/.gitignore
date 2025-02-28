@@ -9,3 +9,4 @@ temp_instances/
 *_instances*
 *.txt
 xperiments/plot/
+*.xlsx

@@ -29,7 +29,7 @@ COMMANDS = {"eclingo-old": f"eclingo $@\n\n",
 
 SHOW_COMMAND_GROUNDERS = {"show-gringo", "show-idlv"}
 
-COMMAND_GROUNDERS = {"eclingo-old", "eclingo", "ep_asp", "ep_asp_no_planning", "selp", "qasp", "ezsmt", "clingcon"}
+COMMAND_GROUNDERS = COMMANDS.keys()
 
 BENCHMARK_ORIGIN = {}
 

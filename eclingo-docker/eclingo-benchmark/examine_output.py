@@ -25,7 +25,7 @@ if __name__ == "__main__":
     parser.add_argument("-s1n", "--solver-1-name", help="name used to save solver 1 results if different than the original name; defaults to solver 1 name if not provided")
     parser.add_argument("-s2", "--solver-2", required=True, help="solver 2 name used in commands")
     parser.add_argument("-s2n", "--solver-2-name", help="name used to save solver 2 results if different than the original name; defaults to solver 2 name if not provided")
-    parser.add_argument("-l", "--line-number")
+    parser.add_argument("-l", "--line-number", help="line number where the answer set is located in solver file after benchmark is executed")
 
     args = parser.parse_args()
 

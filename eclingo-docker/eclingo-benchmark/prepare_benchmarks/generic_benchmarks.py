@@ -34,11 +34,8 @@ def prepare_any_benchmarks(benchmark, benchmark_path, BENCHMARK_RUNNING, max_ins
                         print(output_dir)
                         os.makedirs(output_dir, exist_ok=True)
                         output_path = os.path.join(output_dir, encoding + "_" + instance)
-
-                        # print(encoding_path, instance_path)
-                        # print(output_path)
                         
                         os.system(f"cat {encoding_path} {instance_path}  > {output_path}")
 
 if __name__ == "__main__":
-    prepare_any_benchmarks("../benchmarks/ezsmt", "../running/benchmark-tool-ezsmt")
+    prepare_any_benchmarks("weighted-sequence", "../benchmarks/ezsmt", "../running/benchmark-tool-ezsmt", 2)

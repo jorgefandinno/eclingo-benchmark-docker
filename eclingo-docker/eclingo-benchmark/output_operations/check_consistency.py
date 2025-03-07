@@ -14,12 +14,16 @@ from .constraint_utils import (
     replace_constraints
 )
 
+from .parameters import (
+    answer_line_indices,
+    delimiters,
+)
+
 
 def prepare_instance_paths(df):
     paths = []
-    for solver_file in df.Instance:
-        solver_split = solver_file.split("/")
-        path = solver_split[-3]
+    for op_filepath in df.instance:
+        path = op_filepath.split("/")[-3]
 
         filename = "temp_instances/" + path
         paths.append(filename)
@@ -82,8 +86,9 @@ def check_output_consistency(s2_name, solver_2):
             if sat != "SAT":
                 print("Does not have same answer set.")
                 break
-
-            answer_set = get_new_answer_set(line_index=3)
-            if not add_constraints(answer_set, path, delimiter="&"):
+            
+            line_index = answer_line_indices[s2_name]
+            answer_set = get_new_answer_set(line_index)
+            if not add_constraints(answer_set, path, delimiters.get(s2_name)):
                 break
 

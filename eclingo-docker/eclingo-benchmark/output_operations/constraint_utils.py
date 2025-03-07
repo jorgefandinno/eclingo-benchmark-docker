@@ -42,13 +42,16 @@ def prepare_constraints(atoms: List[str], negative: bool=True):
     return constraints
 
 def get_as_atoms(answer_set, delimiter=None):
-    if delimiter is None:
+    if not delimiter:
         return [atom.strip().replace(" ", "") for atom in answer_set.split() if atom]
     else:
-        return [delimiter+atom.strip().replace(" ", "") for atom in answer_set.split("&") if atom]
+        return [delimiter+atom.strip().replace(" ", "") for atom in answer_set.split(delimiter) if atom]
     
 
 def replace_constraints(filepath, new_atoms):
+    """
+    This function is used for testing eclingo variants
+    """
     with open(filepath, "r") as file:
         content = file.read()
     

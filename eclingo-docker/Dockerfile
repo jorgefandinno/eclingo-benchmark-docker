@@ -13,7 +13,7 @@ ENV solver2=eclingo
 ENV solver2_name=eclingo-old
 ENV max_instances=2
 ENV benchmark=yale
-ENV line_number=10
+
 ENV conda_env_file_path_1=envs/environment_eclingo_reif.yml
 ENV env_name_1=eclingo_reif
 ENV conda_env_file_path_2=envs/environment_eclingo_old.yml
@@ -76,7 +76,7 @@ RUN echo " \
 ./run.sh \${solver1} --max-instances=\${max_instances} --benchmark=\${benchmark} \n\
 conda activate ${env_name_2} \n\
 ./run.sh \${solver2_name} --max-instances=\${max_instances} --benchmark=\${benchmark} \n\
-python examine_output.py -s1 \${solver1} -s2 \${solver2} -s2n \${solver2_name} -l \${line_number} \
+python examine_output.py -s1 \${solver1} -s2 \${solver2} -s2n \${solver2_name} > log.txt\
 " >> setup.sh
 
 ENTRYPOINT ["/bin/bash", "-c"]

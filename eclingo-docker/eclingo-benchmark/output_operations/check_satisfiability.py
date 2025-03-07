@@ -77,6 +77,6 @@ def check_all_instances(solver_output: Tuple[Tuple, Tuple], match_files: Tuple):
 def open_file(file_name: str, solvers: Tuple[str, str]):
     file = open(file_name, "w")
     solver_1, solver_2 = solvers
-    file.write(f"Instance,{solver_1},{solver_2}\n")
+    file.write(f"instance,{solver_1},{solver_2}\n")
     return file
 

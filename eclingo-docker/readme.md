@@ -49,6 +49,16 @@ docker commit cebe1c44fb02 new-eclingo-benchmark
 - In Dockerfile, update environment variables.
 ```
 
+```
+# inside eclingo-docker/eclingo-benchmark/output_operations/
+
+- In parameters.py file, add parameters with respect to the solver outputs.
+- Parameters:
+    - answer_line_indices: line number of the answer set in the output
+    - delimiters: what characters separate the atoms in the answer set (not required if whitespace)
+    - answer_line_prefixes: what word precedes the answer set in the output
+```
+
 # How to add new benchmarks for solvers
 ```
 # inside eclingo-docker/eclingo-benchmark/benchmarks/

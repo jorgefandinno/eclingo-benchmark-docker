@@ -5,7 +5,7 @@ ENV solver1=ezsmt
 ENV solver2=clingcon
 ENV max_instances=2
 ENV benchmark=weighted-sequence
-ENV line_number=1
+
 ENV conda_env_file_path=envs/environment_ezsmt.yml
 ENV env_name=ezsmt
 
@@ -79,7 +79,7 @@ RUN echo " \
 \nconda activate ${env_name} \n\
 ./run.sh \${solver1} --max-instances=\${max_instances} --benchmark=\${benchmark} \n\
 ./run.sh \${solver2} --max-instances=\${max_instances} --benchmark=\${benchmark} \n\
-python examine_output.py -s1 \${solver1} -s2 \${solver2} -l \${line_number} \
+python examine_output.py -s1 \${solver1} -s2 \${solver2} > log.txt \
 " >> setup.sh
 
 ENTRYPOINT ["/bin/bash", "-c"]

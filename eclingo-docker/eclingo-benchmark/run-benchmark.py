@@ -23,7 +23,7 @@ COMMANDS = {"eclingo-old": f"eclingo $@\n\n",
             "ep_asp_no_planning":  f"bash \"$@\"\n\n",
             "selp":    f"bash \"$@\"\n\n",
             "qasp":    f"bash \"$@\"\n\n",
-            "ezsmt": f"ezsmt -v 0 $@\n\n",
+            "ezsmt": f"ezsmt $@\n\n",
             "clingcon": f"clingcon $@\n\n",
         }
 

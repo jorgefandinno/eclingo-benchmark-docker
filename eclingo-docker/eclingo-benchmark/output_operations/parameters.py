@@ -6,9 +6,11 @@ answer_line_indices = {
 }
 
 delimiters = {
+    "eclingo": "&",
     "eclingo-old": "&",
 }
 
 answer_line_prefixes = {
     "ezsmt": "Answer 1:"
 }
+

@@ -1,10 +1,15 @@
 #!/bin/bash
 
-IMAGE_NAME=eclingo-benchmark
-CONTAINER_NAME=eclingo-container
+IMAGE_NAME=ezsmt
+CONTAINER_NAME=ezsmt-container
 
-# docker build -t $IMAGE_NAME .
-docker build -t $IMAGE_NAME -f ezsmt-comparison/Dockerfile .
+BUILD_ARGS=""
+for arg in $@; do
+    BUILD_ARGS+="$arg " 
+done
+
+docker build $BUILD_ARGS -t $IMAGE_NAME .
+# docker build $BUILD_ARGS -t $IMAGE_NAME -f ezsmt-comparison/Dockerfile .
 
 if [ $(docker ps -a -q -f name=$CONTAINER_NAME) ]; then
     docker rm $CONTAINER_NAME

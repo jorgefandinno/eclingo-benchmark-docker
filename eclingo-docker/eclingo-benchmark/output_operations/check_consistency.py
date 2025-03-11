@@ -77,7 +77,7 @@ def check_output_consistency(s2_name, solver_2):
 
             output_file = open("output.txt", "w")
             error_file = open("error.txt", "w")
-            subprocess.run([command], shell=True, stdout=output_file, stderr=error_file, timeout=150)
+            subprocess.run([command], shell=True, stdout=output_file, stderr=error_file, timeout=610)
             gc.collect()
             output_file.close()
             error_file.close()

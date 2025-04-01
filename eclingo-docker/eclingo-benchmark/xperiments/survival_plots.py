@@ -51,12 +51,8 @@ class Analyzer:
         run_df = df.iloc[1:nan, times]
 
         mini_df = run_df.iloc[:, 1:]
-        # print(mini_df)
         total = mini_df.mean(axis=1)
-        # print(total)
-
-        run = {}
-        run["eligible"] = list(total)
+        
         return list(total)
 
     
@@ -72,16 +68,9 @@ class Analyzer:
     
     def read_ods(self, _file):  # absolute path with .ods at the end
         import os
-        # os.system("soffice -env:UserInstallation=file:///$HOME/.libreoffice-headless/ --headless --convert-to xlsx " + _file)
-        xlsx = "xperiments/results/" + _file.rsplit('/', 1)[1][:-3] + "xlsx"
+        os.system("soffice -env:UserInstallation=file:///$HOME/.libreoffice-headless/ --headless --convert-to xlsx " + _file)
+        xlsx = _file[:-3] + "xlsx"
         instance_name = Path(_file).stem
-        
-        # # Save the data to an XLSX file
-        # data = pe.get_array(file_name=_file)
-        # pe.save_as(array=data, dest_file_name='output.xlsx')
-        # xlsx = os.path.splitext(_file)[0] + '.xlsx'
-        # instance_name = Path(_file).stem
-        # print(instance_name)
         
         return [pd.read_excel(xlsx), instance_name]
     
@@ -123,19 +112,10 @@ def run(files, solver_names):
     print("How many:", len(all_times))
     max_time = float(math.ceil(max(all_times))) # Get which is the maximum time for running.
     
-    max_time = 600
-    exponent, time = 0,0
-    tr = ['0']
-    while time < max_time:
-        time = 2**exponent
-        tr.append(str(time))
-        exponent+=1
-
-    # time_range = [i for i in range(0, max_time+1, max_time/10)]
-    # time_range = [x * 0.1 for x in range(0, 10)] # Yale Shooting problem
-    # time_range_str = [str(i) for i in range(0, max_time+1, max_time//10)]
-    time_range_str = [str(i) for i in range(0, max_time+1, 1)]
-    time_range_str = ','.join(time_range_str)
+    max_time = min(max_time, 600)
+    
+    y_tick = {i*max_time/10 for i in range(1,11)}
+    x_tick = set(range(1, (math.ceil(len(all_times)/2) + 2)))
 
     tex= f'''
 \\documentclass{{standalone}}
@@ -150,16 +130,21 @@ def run(files, solver_names):
     title={{Survival Plots for solvers}},
     ylabel={{Time(Seconds)}},
     xlabel={{#No of Instances solved}},
-    ymin=0, ymax=603,
-    xmin=0, xmax=225,
-    ytick={{0,60,120,180,240,300,360,420,480,540,600}},
-    xtick={{40, 80, 120, 160, 200, 220}},
+    ymin=0, ymax={max_time},
+    xmin=0, xmax={max(x_tick)},
+    ytick={str(y_tick)},
+    xtick={str(x_tick)},
     legend pos=north west,
     ymajorgrids=true,
     grid style=dashed,
 ]
 '''
 
+    colors = ["red", "blue", "green", "yellow", "black"]
+    if len(times) > len(colors):
+        print("Number of solvers more than colors. Please add more colors.")
+        exit(1)
+    
     for j, t in enumerate(times):
 
         ti = times[t]
@@ -176,7 +161,7 @@ def run(files, solver_names):
 
         tex += f'''
         \\addplot[
-        color=blue,
+        color={colors[j]},
         mark=*,
         ]
         coordinates {{
@@ -192,21 +177,16 @@ def run(files, solver_names):
 \end{{document}}
     '''
 
-    f = open("xperiments/results/Final_Solver_comparison_328P.tex", "w")
+    f = open("results.tex", "w")
     f.write(tex)
     f.close()
     
 # TODO: Fix manual conversion of ods to xlsx without sudo privileges
 if __name__ == "__main__": 
-    solvers = ["Reif-Prop", "Reif-No-Prop", "eclingo", "elp2qasp", "selp", "EP-ASP", "EP-ASP-No-Planning"]
+    solvers = ["eclingo", "eclingo-old"]
     
-    run(["xperiments/results/eclingo_reif_(YBE)_Propagate_600s.ods",
-         "xperiments/results/eclingo_reif_(YBE)_NO_Propagate_600s.ods",
-         "xperiments/results/eclingo_(YBE)_600s.ods",
-         "xperiments/results/qasp_(YBE)_600s.ods",
-         "xperiments/results/selp_(YBE)_600s.ods",
-         "xperiments/results/EP_ASP_(YBE)_600s.ods",
-         "xperiments/results/EP_ASP_NP_(YBE)_600s.ods"], solvers)
+    run(["eclingo.ods",
+         "eclingo-old.ods"], solvers)
 
 
 

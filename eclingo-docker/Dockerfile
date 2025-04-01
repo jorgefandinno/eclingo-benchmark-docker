@@ -3,14 +3,14 @@ FROM ubuntu:22.04
 # LABEL about the custom image
 LABEL maintainer="kdhakal@unomaha.edu"
 LABEL version="0.1"
-LABEL description="This is a custom Docker Image for benchmarking solvers for Epistemic Logic Programs (ELPs)"
+LABEL description="This is a custom Docker Image for benchmarking and comparing solvers"
 # Disable Prompt During Packages Installation
 ARG DEBIAN_FRONTEND=noninteractive
 
 # setup environment variables
-ENV solver1=eclingo
-ENV solver2=eclingo
-ENV solver2_name=eclingo-old
+ENV solver_1=eclingo
+ENV solver_2=eclingo
+ENV solver_2_name=eclingo-old
 ENV max_instances=2
 ENV benchmark=yale
 
@@ -46,18 +46,16 @@ WORKDIR /root/eclingo-benchmark/
 # set bash (interactive) as the default shell
 # SHELL ["/bin/bash", "-i", "-c"]
 
-# create conda environments
+# create and activate eclingo_reif conda environment, install eclingo-new
 RUN conda env create -f ${conda_env_file_path_1}
-RUN conda env create -f ${conda_env_file_path_2}
-
-# activate eclingo_reif conda environment, install eclingo new
 RUN eval "$(conda shell.bash hook)" \
     && conda activate ${env_name_1} \
     && git clone https://github.com/jorgefandinno/eclingo.git \
     && cd eclingo/ \
     && pip install .  
 
-# activate eclingo_old conda environment, install eclingo old and run benchmark
+# create and activate eclingo_old conda environment, install eclingo-old
+RUN conda env create -f ${conda_env_file_path_2}
 RUN eval "$(conda shell.bash hook)" \
     && conda activate ${env_name_2} \
     && rm -r eclingo \
@@ -68,16 +66,6 @@ RUN eval "$(conda shell.bash hook)" \
 
 # copy setup bash file to image
 COPY setup.sh .
-
-# Adding below line escapes dollar sign with backward slash
-# escape=`
-RUN echo " \
-\nconda activate ${env_name_1} \n\
-./run.sh \${solver1} --max-instances=\${max_instances} --benchmark=\${benchmark} \n\
-conda activate ${env_name_2} \n\
-./run.sh \${solver2_name} --max-instances=\${max_instances} --benchmark=\${benchmark} \n\
-python examine_output.py -s1 \${solver1} -s2 \${solver2} -s2n \${solver2_name} > log.txt\
-" >> setup.sh
 
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["./setup.sh"]

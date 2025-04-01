@@ -28,6 +28,7 @@ RUN apt install -y wget
 RUN apt install -y git
 RUN apt install -y python2
 RUN apt install -y libnuma-dev
+RUN apt install libreoffice
 RUN mkdir -p /root/miniconda3
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /root/miniconda3/miniconda.sh
 RUN chmod +x ~/miniconda3/miniconda.sh

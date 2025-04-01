@@ -2,3 +2,6 @@
 .DS*
 boost_1_79*
 *.smt2
+*.txt
+*.xlsx
+*.tex

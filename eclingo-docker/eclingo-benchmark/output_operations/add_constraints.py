@@ -9,13 +9,15 @@ from .constraint_utils import (
     get_as_atoms, 
     write_to_file,
     get_answer_set_path,
-    get_constraints_path
+    get_constraints_path,
+    find_line_index,
 )
 
 from .parameters import (
     answer_line_indices,
     delimiters,
     answer_line_prefixes,
+    relative_indices,
 )
 
 def get_unique_output_filepaths(op_filepaths):
@@ -32,8 +34,7 @@ def get_unique_output_filepaths(op_filepaths):
     
 def save_constraints(s1_name: str, results_path: str, rel_instance_path: str) -> bool:
     """
-    Checks the satisfiability output for the solvers
-    and write answer sets and constraints to files
+    Writes answer sets and constraints to files
     """
     df = pd.read_csv(match_files[0])
     df = df[df[s1_name] == "SAT"]
@@ -47,9 +48,20 @@ def save_constraints(s1_name: str, results_path: str, rel_instance_path: str) ->
         dest_path = get_destination_path("temp_instances", filepath)
         filename = copy_instance(instance_path, dest_path)
 
-        answer_line_index = answer_line_indices[s1_name]
-        answer_set = get_answer_set(results_path, op_filepath, answer_line_index)
+        path = os.path.join(
+            os.getcwd(), 
+            results_path, 
+            op_filepath
+        )
+        
+        answer_line_index = answer_line_indices.get(s1_name)
+        if not answer_line_index:
+            text, deviation = relative_indices[s1_name]
+            answer_line_index = find_line_index(path, text) + deviation
+            
+        answer_set = get_answer_set(path, answer_line_index)
         answer_set = remove_prefix(answer_set, s1_name)
+        
         as_atoms = get_as_atoms(answer_set, delimiter=delimiters.get(s1_name))
         as_path = get_answer_set_path(filename)
         write_to_file(as_path, as_atoms, replace=True)
@@ -73,15 +85,11 @@ def copy_instance(instance_path, dest_path):
     filename = shutil.copy(instance_path, dest_path)
     return filename
 
-def get_answer_set(results_path, output_filepath, line_number):
-    path = os.path.join(
-        os.getcwd(), 
-        results_path, 
-        output_filepath
-    )
+def get_answer_set(path, line_index):
     with open(path, "r") as file:
         lines = file.readlines()
-        answer_set = lines[line_number]
+        
+    answer_set = lines[line_index]
     return answer_set
 
 def remove_prefix(answer_set, s1_name):

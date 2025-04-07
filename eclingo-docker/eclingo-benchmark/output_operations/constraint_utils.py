@@ -14,6 +14,17 @@ def get_answer_set_path(path):
 def get_constraints_path(path):
     return path + "_constraints.lp"
 
+def find_line_index(path, text):
+    with open(path, "r") as file:
+        lines = file.readlines()
+        
+    for idx, line in enumerate(lines):
+        if text.lower() in line.lower():
+            return idx
+        
+    print("Error on finding answer set line index.")
+    exit(1)
+
 def check_sat(path: str):
     if not os.path.isfile(path):
         raise FileNotFoundError(f"{path} does not exist!!")

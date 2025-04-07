@@ -1,7 +1,7 @@
 #!/bin/bash
 
-IMAGE_NAME=ezsmt
-CONTAINER_NAME=ezsmt-container
+IMAGE_NAME=eclingo-benchmark
+CONTAINER_NAME=${IMAGE_NAME}-container
 
 BUILD_ARGS=""
 for arg in $@; do
@@ -17,4 +17,8 @@ fi
 
 docker run --name $CONTAINER_NAME $IMAGE_NAME
 
-docker cp $CONTAINER_NAME:/root/eclingo-benchmark/log.txt .
+mkdir -p results
+docker cp $CONTAINER_NAME:/root/eclingo-benchmark/log.txt results/
+docker cp $CONTAINER_NAME:/root/eclingo-benchmark/analysis/ results/
+
+echo "All results are stored in results directory"

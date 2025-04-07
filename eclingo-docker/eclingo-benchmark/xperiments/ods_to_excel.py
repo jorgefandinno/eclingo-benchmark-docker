@@ -1,14 +1,12 @@
 import ezodf
 import os
 import pandas as pd
-
 from pathlib import Path
 
-
-def get_ods_filepath(solver):
-    root_dir = Path(__file__).resolve().parent
-    relative_path = f"running/benchmark-tool-{solver}/experiments/results/{solver}/{solver}.ods"
-    return os.path.join(root_dir, relative_path)
+OUTPUT_FOLDER = os.path.join(
+    str(Path(__file__).resolve().parent.parent),
+    "analysis"
+)
 
 def filter_df(df):
     df = df.drop(columns = ["min", "median", "max"])
@@ -27,8 +25,7 @@ def update_timed_out_instances(df, solver):
     df[f"{solver}_2"] = [value if value <= 600 else 600 for value in df[f"{solver}_2"]]
     return df
 
-def load_ods_to_df(solver):
-    filepath = get_ods_filepath(solver)
+def load_ods_to_df(filepath, solver):
     spreadsheet = ezodf.opendoc(filepath)
     sheet = spreadsheet.sheets[0]  # access the first sheet
 
@@ -50,45 +47,53 @@ def load_ods_to_df(solver):
     
     return df
 
-def get_combined_df(df_1, df_2):
+def get_combined_df(dfs, solvers):
     combined_df = pd.DataFrame()
-    combined_df["instances"] = df_1["instances"]
-    combined_df[f"{solver_1}"] = df_1[f"{solver_1}_average"]
-    combined_df[f"{solver_2}"] = df_2[f"{solver_2}_average"]
+    combined_df["instances"] = dfs[0]["instances"]
+    for i, solver in enumerate(solvers):
+        combined_df[solver] = dfs[i][f"{solver}_average"]
     return combined_df
 
-def get_aggregate_solver_times(combined_df):
+def get_aggregate_solver_times(combined_df, solvers):
     combined_df = combined_df.copy()
     combined_df["instances"] = [instance.split("/")[0] for instance in combined_df["instances"]]
     aggregate_df = combined_df.groupby("instances").mean()
 
-    s1_df = combined_df[["instances", f"{solver_1}"]]
-    s1_df = s1_df[s1_df[f"{solver_1}"] < 600]
-
-    s2_df = combined_df[["instances", f"{solver_2}"]]
-    s2_df = s2_df[s2_df[f"{solver_2}"] < 600]
-
-    aggregate_df[f"{solver_1}_count"] = s1_df.groupby("instances")[f"{solver_1}"].count()
-    aggregate_df[f"{solver_2}_count"] = s2_df.groupby("instances")[f"{solver_2}"].count()
+    for solver in solvers:
+        df = combined_df[["instances", solver]]
+        df = df[df[solver] < 600]
+        aggregate_df[f"{solver}_count"] = df.groupby("instances")[solver].count()
     
     return aggregate_df
 
-def main(solver_1, solver_2, print_results=True):
-    df_1 = load_ods_to_df(solver_1)
-    df_2 = load_ods_to_df(solver_2)
+def create_excel_sheets(solvers, file_paths, print_results=True):
+    """
+    Create excels sheets from ods files
+    combined.xlsx with average time for all instances of a benchmark
+    aggregate.xlsx with average time for each benchmark
+    """
     
-    combined_df = get_combined_df(df_1, df_2)
-    combined_df.to_excel("combined.xlsx")
+    dfs = []
+    for i, solver in enumerate(solvers):
+        df = load_ods_to_df(file_paths[i], solver)
+        dfs.append(df)
+        
+    os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+    
+    combined_df = get_combined_df(dfs, solvers)
+    file_name = os.path.join(OUTPUT_FOLDER, "combined.xlsx")
+    combined_df.to_excel(file_name, index=False)
+    print("Average benchmark times for each instance of a benchmark saved in", file_name)
+    
     if print_results:
         print(combined_df)
+
+    aggregate_df = get_aggregate_solver_times(combined_df, solvers)
+    file_name = os.path.join(OUTPUT_FOLDER, "aggregate.xlsx")
+    aggregate_df.to_excel(file_name, index=False)
+    print("Average benchmark times and count for each benchmark saved in", file_name)
     
-    aggregate_df = get_aggregate_solver_times(combined_df)
-    aggregate_df.to_excel("aggregate.xlsx")
     if print_results:
         print(aggregate_df)
-
-
-if __name__ == "__main__":
-    solver_1 = "eclingo"
-    solver_2 = "eclingo-old"
-    main(solver_1, solver_2)
+        
+    return combined_df, aggregate_df

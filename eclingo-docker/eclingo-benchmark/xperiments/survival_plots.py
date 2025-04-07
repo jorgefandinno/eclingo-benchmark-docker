@@ -1,64 +1,24 @@
-import pandas as pd
-import math
-from pathlib import Path
-import itertools
 import argparse
+import itertools
+import math
+import os
+import pandas as pd
+from pathlib import Path
+from ods_to_excel import create_excel_sheets, OUTPUT_FOLDER
 
 
 pd.options.display.float_format = '{:,.1f}'.format
 
-class Analyzer:
-
-    def do_get_3df(self, df):
-        # Get index of first row with all nan values -> total tests
-        try:
-            nan  =  df.index[df.isna().all(axis=1)][0]
-        except IndexError:
-            nan = None 
-            
-        # Get index for EP-ASP tests, as they have different DFs
-        if nan == None:
-            nan = len(df.isna().all(axis=1))
-        
-        # Append the times to construct tex file
-        times=[0]
-        cols = list(df.columns)
-        for i in range(len(cols)):
-            if(cols[i] and cols[i][:6] =='script' ):
-                times.append(i)
-            elif cols[i] == "Times":
-                times.append(i)
-                
-        run_df = df.iloc[1:nan, times]
-        mini_df = run_df.iloc[:, 1:]
-        total = mini_df.mean(axis=1)
-        
-        return list(total)
+def create_tex_file(file_paths, solvers):
+    """
+    Generates tex file that will create cactus plot when compiled
+    """
+    combined_df, aggregate_df = create_excel_sheets(solvers, file_paths, print_results=False)
     
-    # df is a list of DataFrames
-    def get_3df(self, dfs):
-        runs = {}
-        for df in dfs:
-            print("solver name:", df[1])
-            runs[df[1]] = self.do_get_3df(df[0])
-        return runs
+    times = {}
+    for column in combined_df.columns[1:]:
+        times[column] = list(combined_df[column])
     
-    def read_ods(self, _file):  # absolute path with .ods at the end
-        import os
-        os.system("soffice -env:UserInstallation=file:///$HOME/.libreoffice-headless/ --headless --convert-to xlsx " + _file)
-        xlsx = _file.rsplit('/', 1)[1][:-3] + "xlsx"
-        instance_name = Path(_file).stem
-        return [pd.read_excel(xlsx), instance_name]
-    
-    def read_many_ods(self, files):
-        return self.get_3df([self.read_ods(_file) for _file in files])
-
-
-def run(files, solver_names):
-    a = Analyzer()
-
-    # Obtain all running times for all battery of tests included.
-    times = a.read_many_ods(files)
     all_times = list(itertools.chain.from_iterable(times.values()))
     all_times.sort()
     
@@ -66,7 +26,7 @@ def run(files, solver_names):
     max_time = min(max_time, 600)
     
     y_tick = {i*max_time/10 for i in range(1,11)}
-    x_tick = set(range(1, (math.ceil(len(all_times)/2) + 2)))
+    x_tick = set(range(1, (math.ceil(len(all_times)/len(solvers)) + 2)))
 
     tex= f'''
 \\documentclass{{standalone}}
@@ -113,7 +73,7 @@ mark=*,
 coordinates {{
 {coordinates_str}
 }};
-\\addlegendentry{{ {solver_names[j]} }}
+\\addlegendentry{{ {solvers[j]} }}
         '''
         
     tex += f'''
@@ -122,28 +82,35 @@ coordinates {{
 \end{{document}}
     '''
 
-    write_path = "results.tex"
+    os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+    write_path = os.path.join(OUTPUT_FOLDER, "results.tex")
     f = open(write_path, "w")
     f.write(tex)
     f.close()
     
     print("Tex file written at", write_path)
-    
-# TODO: Fix manual conversion of ods to xlsx without sudo privileges
-if __name__ == "__main__":
+
+def get_ods_filepath(solver):
+    """
+    Returns absolute path of the output ods file for given solver
+    """
+    root_dir = Path(__file__).resolve().parent.parent
+    relative_path = str(root_dir/"running"/f"benchmark-tool-{solver}"/"experiments"/"results"/f"{solver}"/f"{solver}.ods")
+    return os.path.join(root_dir, relative_path)
+
+def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-s","--solvers", nargs='+', help="name of solvers to use for plotting", required=True)
+    parser.add_argument("-s", "--solvers", nargs='+', help="name of solvers to use for plotting", required=True)
     
     solvers = parser.parse_args()._get_kwargs()[0][1]
     
-    root_dir = Path(__file__).resolve().parent.parent
     ods_file_paths = []
     for solver in solvers:
-        ods_file_paths.append(str(root_dir/"running"/f"benchmark-tool-{solver}"/"experiments"/"results"/f"{solver}"/f"{solver}.ods"))
+        ods_file_paths.append(get_ods_filepath(solver))
     
-    run(ods_file_paths, solvers)
+    create_tex_file(ods_file_paths, solvers)
 
-
-
+if __name__ == "__main__":
+    main()
 
     

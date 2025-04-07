@@ -10,4 +10,4 @@ conda activate ${env_name_2}
 
 python examine_output.py -s1 ${solver_1} -s2 ${solver_2} -s2n ${solver_2_name} > log.txt
 
-python xperiments/survival_plots.py -s ${solver_1} ${solver_2}
+python xperiments/survival_plots.py -s ${solver_1_name} ${solver_2_name} >> log.txt

@@ -35,7 +35,7 @@ docker run -it eclingo-benchmark /bin/bash
 **Save container as image:**
 ```
 docker commit <container-id> <new-image-name:tag>
-docker commit cebe1c44fb02 new-eclingo-benchmark
+docker commit cebe1c44fb02 eclingo-benchmark-new
 ```
 
 # How to add new solver

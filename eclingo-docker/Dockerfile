@@ -7,10 +7,12 @@ LABEL description="This is a custom Docker Image for benchmarking and comparing 
 # Disable Prompt During Packages Installation
 ARG DEBIAN_FRONTEND=noninteractive
 
-# setup environment variables
+# setup all environment variables
 ENV solver_1=eclingo
+ENV solver_1_name=eclingo
 ENV solver_2=eclingo
 ENV solver_2_name=eclingo-old
+
 ENV max_instances=2
 ENV benchmark=yale
 
@@ -28,7 +30,6 @@ RUN apt install -y wget
 RUN apt install -y git
 RUN apt install -y python2
 RUN apt install -y libnuma-dev
-RUN apt install libreoffice
 RUN mkdir -p /root/miniconda3
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /root/miniconda3/miniconda.sh
 RUN chmod +x ~/miniconda3/miniconda.sh

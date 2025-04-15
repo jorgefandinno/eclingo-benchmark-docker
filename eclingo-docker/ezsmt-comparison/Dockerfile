@@ -1,10 +1,15 @@
 FROM ubuntu:22.04
 
 # setup environment variables
-ENV solver1=ezsmt
-ENV solver2=clingcon
+ENV solver_1=ezsmt
+ENV solver_1_name=ezsmt
+ENV solver_2=clingcon
+ENV solver_2_name=clingcon
+ENV solver_3=clingo
+ENV solver_3_name=clingo
+
 ENV max_instances=2
-ENV benchmark=weighted-sequence
+ENV benchmark=Labyrinth
 
 ENV conda_env_file_path=envs/environment_ezsmt.yml
 ENV env_name=ezsmt
@@ -52,10 +57,6 @@ RUN cd ezsmt-uno \
 ENV PATH=/root/ezsmt-uno/tools:$PATH
 ENV PATH=/root/ezsmt-uno/build:$PATH
 
-# copy benchmarking tool
-COPY eclingo-benchmark /root/eclingo-benchmark/
-WORKDIR /root/eclingo-benchmark/
-
 # install miniconda and initialize
 RUN mkdir -p /root/miniconda3
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /root/miniconda3/miniconda.sh
@@ -67,20 +68,15 @@ RUN /root/miniconda3/bin/conda init bash
 # add miniconda3 to the path
 ENV PATH=/root/miniconda3/bin:$PATH
 
+# copy benchmarking tool
+COPY eclingo-benchmark /root/eclingo-benchmark/
+WORKDIR /root/eclingo-benchmark/
+
 # create conda environment for ezsmt
 RUN conda env create -f ${conda_env_file_path}
 
 # copy setup bash file to image
 COPY setup.sh .
-
-# Adding below line escapes dollar sign with backward slash
-# escape=`
-RUN echo " \
-\nconda activate ${env_name} \n\
-./run.sh \${solver1} --max-instances=\${max_instances} --benchmark=\${benchmark} \n\
-./run.sh \${solver2} --max-instances=\${max_instances} --benchmark=\${benchmark} \n\
-python examine_output.py -s1 \${solver1} -s2 \${solver2} > log.txt \
-" >> setup.sh
 
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["./setup.sh"]

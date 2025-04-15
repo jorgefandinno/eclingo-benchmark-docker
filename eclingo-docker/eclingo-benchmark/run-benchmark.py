@@ -23,8 +23,9 @@ COMMANDS = {"eclingo-old": f"eclingo $@\n\n",
             "ep_asp_no_planning":  f"bash \"$@\"\n\n",
             "selp":    f"bash \"$@\"\n\n",
             "qasp":    f"bash \"$@\"\n\n",
-            "ezsmt": f"ezsmt $@\n\n",
+            "ezsmt": f"ezsmt -V 0 $@\n\n",
             "clingcon": f"clingcon $@\n\n",
+            "clingo": f"clingo $@\n\n",
         }
 
 SHOW_COMMAND_GROUNDERS = {"show-gringo", "show-idlv"}
@@ -76,6 +77,7 @@ def prepare_benchmarks():
         raise ValueError(f"The value for max_instances argument must be an integer !!")
    
     if command_dir == "eclingo" or command_dir == "eclingo-old":
+        print(f"\nUsing solver: Eclingo")
         prepare_benchmarks_eclingo(benchmark, benchmark_origin, BENCHMARK_RUNNING, max_instances)
                 
     elif command_dir == "ep_asp":
@@ -87,13 +89,16 @@ def prepare_benchmarks():
         prepare_benchmarks_ep_asp(benchmark_origin, BENCHMARK_RUNNING)
                     
     elif command_dir == "selp":
+        print(f"\nUsing solver: SELP")
         prepare_benchmarks_selp(benchmark_origin, BENCHMARK_RUNNING)
                     
     elif command_dir == "qasp":
+        print(f"\nUsing solver: QASP")
         prepare_benchmarks_qasp(benchmark_origin, BENCHMARK_RUNNING)
     
-    elif command_dir == "ezsmt" or command_dir == "clingcon":
-        benchmark_origin = "./benchmarks/ezsmt"
+    elif command_dir == "ezsmt" or command_dir == "clingcon" or command_dir == "clingo":
+        benchmark_origin = "./benchmarks/clingo"
+        print(f"\nUsing solver {command_dir}")
         prepare_any_benchmarks(benchmark, benchmark_origin, BENCHMARK_RUNNING, max_instances)
                 
                 

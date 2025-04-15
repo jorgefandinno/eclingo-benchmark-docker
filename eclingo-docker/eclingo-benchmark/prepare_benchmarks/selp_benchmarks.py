@@ -59,7 +59,6 @@ def prepare_benchmark_bomb_selp(benchmark_path, BENCHMARK_RUNNING):
                         os.system(f"cat {file_path} > {output_path}")
 
 def prepare_benchmarks_selp(benchmark_origin, BENCHMARK_RUNNING):
-    print(f"\nUsing solver: SELP")
     for benchmark_path in os.listdir(benchmark_origin):
         benchmark_path = os.path.join(benchmark_origin, benchmark_path)
         if os.path.isdir(benchmark_path):

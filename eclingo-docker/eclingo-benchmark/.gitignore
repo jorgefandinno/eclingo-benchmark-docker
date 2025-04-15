@@ -10,3 +10,6 @@ temp_instances/
 *.txt
 xperiments/plot/
 *.xlsx
+ep_asp/
+ep_asp_no_planning/
+new_running/

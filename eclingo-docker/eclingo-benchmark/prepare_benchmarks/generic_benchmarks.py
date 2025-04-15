@@ -1,18 +1,20 @@
 import os
         
-def prepare_any_benchmarks(benchmark, benchmark_path, BENCHMARK_RUNNING, max_instances):
-    benchmark_name = os.path.basename(benchmark_path)
-    dir = os.path.join(BENCHMARK_RUNNING,"experiments","instances", benchmark_name)
-    
-    all_benchmarks = os.listdir(benchmark_path)
-    for benchmark_name in all_benchmarks:
-        if benchmark != "all" and benchmark != benchmark_name:
+def prepare_any_benchmarks(benchmark, benchmark_origin, BENCHMARK_RUNNING, max_instances):
+    for benchmark_path in os.listdir(benchmark_origin):
+        benchmark_path = os.path.join(benchmark_origin, benchmark_path)
+        if not os.path.isdir(benchmark_path):
             continue
         
-        # Path to the current directory, subsequently encoding and instance directory
-        current_dir = os.path.join(benchmark_path, benchmark_name)
-        encoding_dir = os.path.join(current_dir, "encodings")
-        instance_dir = os.path.join(current_dir, "instances")
+        benchmark_name = os.path.basename(benchmark_path)
+        output_dir = os.path.join(BENCHMARK_RUNNING,"experiments","instances", benchmark_name)
+        
+        if benchmark != "all" and benchmark_name not in benchmark:
+            continue
+        
+        # Path to the benchmark encodings and instances directory
+        encoding_dir = os.path.join(benchmark_path, "encodings")
+        instance_dir = os.path.join(benchmark_path, "instances")
         
         if os.path.isdir(encoding_dir):
             encodings = os.listdir(encoding_dir)
@@ -30,7 +32,6 @@ def prepare_any_benchmarks(benchmark, benchmark_path, BENCHMARK_RUNNING, max_ins
                     for instance in instances:
                         instance_path = os.path.join(instance_dir, instance)
 
-                        output_dir = os.path.join(dir, os.path.basename(benchmark_name))
                         print(output_dir)
                         os.makedirs(output_dir, exist_ok=True)
                         output_path = os.path.join(output_dir, encoding + "_" + instance)

@@ -61,7 +61,6 @@ def prepare_benchmark_eligible_qasp(benchmark_path, BENCHMARK_RUNNING):
         os.system(f"cat {file_path} > {output_path}")
 
 def prepare_benchmarks_qasp(benchmark_origin, BENCHMARK_RUNNING):
-    print(f"\nUsing solver: QASP")
     for benchmark_path in os.listdir(benchmark_origin):
         benchmark_path = os.path.join(benchmark_origin, benchmark_path)
         if os.path.isdir(benchmark_path):

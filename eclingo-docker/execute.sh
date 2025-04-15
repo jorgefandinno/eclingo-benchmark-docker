@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # For eclingo comparison
-# IMAGE_NAME=eclingo-benchmark
+IMAGE_NAME=eclingo-benchmark
 
 # For ezsmt comparison
-IMAGE_NAME=ezsmt
+# IMAGE_NAME=ezsmt
 
 CONTAINER_NAME=${IMAGE_NAME}-container
 
@@ -14,10 +14,10 @@ for arg in $@; do
 done
 
 # For eclingo comparison
-# docker build $BUILD_ARGS -t $IMAGE_NAME .
+docker build $BUILD_ARGS -t $IMAGE_NAME .
 
 # For ezsmt comparison
-docker build $BUILD_ARGS -t $IMAGE_NAME -f ezsmt-comparison/Dockerfile .
+# docker build $BUILD_ARGS -t $IMAGE_NAME -f ezsmt-comparison/Dockerfile .
 
 if [ $(docker ps -a -q -f name=$CONTAINER_NAME) ]; then
     docker rm $CONTAINER_NAME

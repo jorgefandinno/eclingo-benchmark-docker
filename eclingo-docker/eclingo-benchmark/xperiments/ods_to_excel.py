@@ -83,14 +83,14 @@ def create_excel_sheets(solvers, file_paths, print_results=True):
     combined_df = get_combined_df(dfs, solvers)
     file_name = os.path.join(OUTPUT_FOLDER, "combined.xlsx")
     combined_df.to_excel(file_name, index=False)
-    print("Average benchmark times for each instance of a benchmark saved in", file_name)
+    print("Average benchmark times for all instances of all benchmarks saved in", file_name)
     
     if print_results:
         print(combined_df)
 
     aggregate_df = get_aggregate_solver_times(combined_df, solvers)
     file_name = os.path.join(OUTPUT_FOLDER, "aggregate.xlsx")
-    aggregate_df.to_excel(file_name, index=False)
+    aggregate_df.to_excel(file_name)
     print("Average benchmark times and count for each benchmark saved in", file_name)
     
     if print_results:

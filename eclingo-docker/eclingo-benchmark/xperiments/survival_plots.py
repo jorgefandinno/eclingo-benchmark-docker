@@ -24,9 +24,11 @@ def create_tex_file(file_paths, solvers):
     
     max_time = float(math.ceil(max(all_times))) # Get which is the maximum time for running.
     max_time = min(max_time, 600)
+    y_tick = {i*max_time/5 for i in range(1,6)}
     
-    y_tick = {i*max_time/10 for i in range(1,11)}
-    x_tick = set(range(1, (math.ceil(len(all_times)/len(solvers)) + 2)))
+    max_x = (math.ceil(len(all_times)/len(solvers)) + 1)
+    x_tick = set(range(1, max_x, max(1, int(max_x/5))))
+    
 
     tex= f'''
 \\documentclass{{standalone}}
@@ -38,11 +40,11 @@ def create_tex_file(file_paths, solvers):
 \\begin{{document}}
 \\begin{{tikzpicture}}
 \\begin{{axis}}[
-    title={{Survival Plots for solvers}},
+    title={{Survival Plot for Solvers}},
     ylabel={{Time(Seconds)}},
     xlabel={{#No of Instances solved}},
     ymin=0, ymax={max_time},
-    xmin=0, xmax={max(x_tick)},
+    xmin=0, xmax={max_x},
     ytick={str(y_tick)},
     xtick={str(x_tick)},
     legend pos=north west,

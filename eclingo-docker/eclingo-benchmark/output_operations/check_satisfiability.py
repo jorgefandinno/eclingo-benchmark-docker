@@ -53,9 +53,8 @@ def check_all_instances(solver_output: Tuple[Tuple, Tuple], match_files: Tuple):
     if solver_1_output == solver_2_output:
         print("Consistent SAT and UNSAT across both solvers.")
     else:
-        print(solver_1_output)
-        print(solver_2_output)
         print("Satisfiability is not consistent !!")
+        print(f"Please check the results file: {match_files}")
 
     match_file = open_file(match_files[0], (solver_1, solver_2))
     non_match_file = open_file(match_files[1], (solver_1, solver_2))

@@ -9,7 +9,7 @@ def prepare_any_benchmarks(benchmark, benchmark_origin, BENCHMARK_RUNNING, max_i
         benchmark_name = os.path.basename(benchmark_path)
         output_dir = os.path.join(BENCHMARK_RUNNING,"experiments","instances", benchmark_name)
         
-        if benchmark != "all" and benchmark_name not in benchmark:
+        if benchmark != "all" and benchmark_name.lower() not in benchmark.lower():
             continue
         
         # Path to the benchmark encodings and instances directory

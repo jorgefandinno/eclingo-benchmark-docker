@@ -162,22 +162,22 @@ def prepare_benchmarks_eclingo(benchmark, benchmark_origin, BENCHMARK_RUNNING, m
         if os.path.isdir(benchmark_path):
 
             if os.path.basename(benchmark_path) == "bomb_problems":
-                if benchmark == "all" or "bomb" in benchmark:
+                if benchmark == "all" or "bomb" in benchmark.lower():
                     print("Working on BOMB Problems")
                     prepare_benchmark_bomb(benchmark_path, BENCHMARK_RUNNING, max_instances)
                 # pass
             elif os.path.basename(benchmark_path) == "action-reversibility":
-                if benchmark == "all" or "reversibility" in benchmark:
+                if benchmark == "all" or "reversibility" in benchmark.lower():
                     print("Working on ACTION Problems")
                     prepare_benchmark_action(benchmark_path, BENCHMARK_RUNNING, max_instances)
                     # pass
             elif os.path.basename(benchmark_path) == "eligible":
-                if benchmark == "all" or "eligible" in benchmark:
+                if benchmark == "all" or "eligible" in benchmark.lower():
                     print("Working on ELIGIBLE Problems")
                     prepare_benchmark_eligible_eclingo(benchmark_path, BENCHMARK_RUNNING, max_instances)
                     # pass
-            else:
-                if benchmark == "all" or "yale" in benchmark:
+            elif os.path.basename(benchmark_path) == "yale_shooting":
+                if benchmark == "all" or "yale" in benchmark.lower():
                     print("Working on YALE Problems")
                     prepare_benchmark_yale(benchmark_path, BENCHMARK_RUNNING, max_instances)
                     # pass

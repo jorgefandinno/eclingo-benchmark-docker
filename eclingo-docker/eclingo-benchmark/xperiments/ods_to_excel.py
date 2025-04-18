@@ -8,21 +8,48 @@ OUTPUT_FOLDER = os.path.join(
     "analysis"
 )
 
+TIMEOUT_DURATION = 600
+
 def filter_df(df):
     df = df.drop(columns = ["min", "median", "max"])
     df = df.dropna(axis = 1, how = 'all')
     
     keywords = ["SUM", "AVG", "DEV", "DST", "BEST", "BETTER", "WORSE", "WORST"]
     # create a boolean mask identifying rows with keywords
-    mask = df["instances"].str.contains('|'.join(keywords), case=False, na=False)
+    mask = df["instance"].str.contains('|'.join(keywords), case=False, na=False)
     df = df[~mask]
     
     df = df.dropna(axis=0)
     return df
 
+def update_memory_error_instances(df, timed_out_file_path):
+    df = df.copy()
+    root_dir = Path(__file__).resolve().parent.parent
+    path = str(root_dir/timed_out_file_path)
+    
+    timed_out_df = pd.read_csv(path)
+    timed_out_df["instance"] = list(
+        map(
+            lambda x: os.path.join(*x.split("/")[1:-2]), 
+            timed_out_df["instance"].tolist()
+        )
+    )
+    
+    columns = timed_out_df.columns
+    solver_count = len(columns) - 1
+    
+    for row in timed_out_df.itertuples():
+        instance = row[1]
+        for i in range(0, solver_count-1):
+            solver = columns[i+1]
+            if row[i+2] == "None":
+                mask = (df["instance"] == instance)
+                df.loc[mask, solver] = TIMEOUT_DURATION
+    return df
+
 def update_timed_out_instances(df, solver):
-    df[f"{solver}_1"] = [value if value <= 600 else 600 for value in df[f"{solver}_1"]]
-    df[f"{solver}_2"] = [value if value <= 600 else 600 for value in df[f"{solver}_2"]]
+    df[f"{solver}_1"] = [value if value <= TIMEOUT_DURATION else TIMEOUT_DURATION for value in df[f"{solver}_1"]]
+    df[f"{solver}_2"] = [value if value <= TIMEOUT_DURATION else TIMEOUT_DURATION for value in df[f"{solver}_2"]]
     return df
 
 def load_ods_to_df(filepath, solver):
@@ -37,7 +64,7 @@ def load_ods_to_df(filepath, solver):
         all_values.append(row_list)
         
     columns = all_values[0]
-    columns[:3] = ["instances", f"{solver}_1", f"{solver}_2"]
+    columns[:3] = ["instance", f"{solver}_1", f"{solver}_2"]
     all_values = all_values[2:]
 
     df = pd.DataFrame(all_values, columns=columns)
@@ -49,24 +76,24 @@ def load_ods_to_df(filepath, solver):
 
 def get_combined_df(dfs, solvers):
     combined_df = pd.DataFrame()
-    combined_df["instances"] = dfs[0]["instances"]
+    combined_df["instance"] = dfs[0]["instance"]
     for i, solver in enumerate(solvers):
         combined_df[solver] = dfs[i][f"{solver}_average"]
     return combined_df
 
 def get_aggregate_solver_times(combined_df, solvers):
     combined_df = combined_df.copy()
-    combined_df["instances"] = [instance.split("/")[0] for instance in combined_df["instances"]]
-    aggregate_df = combined_df.groupby("instances").mean()
+    combined_df["instance"] = [instance.split("/")[0] for instance in combined_df["instance"]]
+    aggregate_df = combined_df.groupby("instance").mean()
 
     for solver in solvers:
-        df = combined_df[["instances", solver]]
-        df = df[df[solver] < 600]
-        aggregate_df[f"{solver}_count"] = df.groupby("instances")[solver].count()
+        df = combined_df[["instance", solver]]
+        df = df[df[solver] < TIMEOUT_DURATION]
+        aggregate_df[f"{solver}_count"] = df.groupby("instance")[solver].count()
     
     return aggregate_df
 
-def create_excel_sheets(solvers, file_paths, print_results=True):
+def create_excel_sheets(solvers, file_paths, timed_out_file_path, print_results=True):
     """
     Create excels sheets from ods files
     combined.xlsx with average time for all instances of a benchmark
@@ -81,6 +108,7 @@ def create_excel_sheets(solvers, file_paths, print_results=True):
     os.makedirs(OUTPUT_FOLDER, exist_ok=True)
     
     combined_df = get_combined_df(dfs, solvers)
+    combined_df = update_memory_error_instances(combined_df, timed_out_file_path)
     file_name = os.path.join(OUTPUT_FOLDER, "combined.xlsx")
     combined_df.to_excel(file_name, index=False)
     print("Average benchmark times for all instances of all benchmarks saved in", file_name)

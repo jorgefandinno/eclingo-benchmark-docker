@@ -12,7 +12,7 @@ conda activate ${env_name_2}
 
 python examine_output.py -s1 ${solver_1} -s2 ${solver_2} -s2n ${solver_2_name} > log.txt
 
-python xperiments/survival_plots.py -s ${solver_1_name} ${solver_2_name} >> log.txt
+python analyse.py -s ${solver_1_name} ${solver_2_name} >> log.txt
 
 
 # # Comparison between ezsmt, clingcon and clingo
@@ -24,4 +24,4 @@ python xperiments/survival_plots.py -s ${solver_1_name} ${solver_2_name} >> log.
 # python examine_output.py -s1 ${solver_1} -s1n ${solver_1_name} -s2 ${solver_2} -s2n ${solver_2_name} > log.txt
 # python examine_output.py -s1 ${solver_1} -s1n ${solver_1_name} -s2 ${solver_3} -s2n ${solver_3_name} >> log.txt
 
-# python xperiments/survival_plots.py -s ${solver_1_name} ${solver_2_name} ${solver_3_name} >> log.txt
+# python analyse.py -s ${solver_1_name} ${solver_2_name} ${solver_3_name} >> log.txt

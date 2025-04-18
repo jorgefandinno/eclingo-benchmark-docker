@@ -4,16 +4,15 @@ import math
 import os
 import pandas as pd
 from pathlib import Path
-from ods_to_excel import create_excel_sheets, OUTPUT_FOLDER
+from .ods_to_excel import create_excel_sheets, OUTPUT_FOLDER
 
 
 pd.options.display.float_format = '{:,.1f}'.format
 
-def create_tex_file(file_paths, solvers):
+def create_tex_file(combined_df, solvers):
     """
     Generates tex file that will create cactus plot when compiled
     """
-    combined_df, aggregate_df = create_excel_sheets(solvers, file_paths, print_results=False)
     
     times = {}
     for column in combined_df.columns[1:]:
@@ -99,20 +98,5 @@ def get_ods_filepath(solver):
     root_dir = Path(__file__).resolve().parent.parent
     relative_path = str(root_dir/"running"/f"benchmark-tool-{solver}"/"experiments"/"results"/f"{solver}"/f"{solver}.ods")
     return os.path.join(root_dir, relative_path)
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-s", "--solvers", nargs='+', help="name of solvers to use for plotting", required=True)
-    
-    solvers = parser.parse_args()._get_kwargs()[0][1]
-    
-    ods_file_paths = []
-    for solver in solvers:
-        ods_file_paths.append(get_ods_filepath(solver))
-    
-    create_tex_file(ods_file_paths, solvers)
-
-if __name__ == "__main__":
-    main()
 
     

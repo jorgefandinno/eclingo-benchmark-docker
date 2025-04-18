@@ -69,5 +69,6 @@ RUN eval "$(conda shell.bash hook)" \
 # copy setup bash file to image
 COPY setup.sh .
 
+
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["./setup.sh"]

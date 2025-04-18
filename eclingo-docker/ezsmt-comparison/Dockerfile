@@ -9,7 +9,7 @@ ENV solver_3=clingo
 ENV solver_3_name=clingo
 
 ENV max_instances=2
-ENV benchmark=Labyrinth
+ENV benchmark=weighted-sequence
 
 ENV conda_env_file_path=envs/environment_ezsmt.yml
 ENV env_name=ezsmt
@@ -76,7 +76,8 @@ WORKDIR /root/eclingo-benchmark/
 RUN conda env create -f ${conda_env_file_path}
 
 # copy setup bash file to image
-COPY setup.sh .
+COPY setup-ezsmt-clingcon.sh .
+
 
 ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["./setup.sh"]
+CMD ["./setup-ezsmt-clingcon.sh"]

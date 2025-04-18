@@ -6,3 +6,4 @@ boost_1_79*
 *.xlsx
 *.tex
 nohup.out
+results/

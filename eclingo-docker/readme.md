@@ -1,5 +1,6 @@
 
 # How to use the Benchmarking Platform
+The following instructions require Docker to be installed and running.
 
 ### Clone repository and go to required directory:
 ```
@@ -9,11 +10,14 @@ cd eclingo-benchmark-docker/eclingo-docker/
 
 ### Run everything at once (if everything is setup)
 Run the below command, if everything is already setup. <br>
+**OR** <br>
+Create a similar bash script if using new solvers. <br>
+<br>
 If running for the first time, consider checking [adding new solver](#how-to-add-new-solver) and [adding new benchmarks](#how-to-add-new-benchmarks-for-solvers). <br>
-[execute.sh]() has three steps: [Building docker image](###Build-docker-image), [Running docker container](###Run-docker-container), and copying results from container to host machine.
 ```
-./execute.sh
+./compare.sh
 ```
+[compare.sh](compare.sh) has three steps: [Building docker image](###Build-docker-image), [Running docker container](###Run-docker-container), and Copying results from container to host machine.
 
 # Docker Operations
 
@@ -53,15 +57,19 @@ docker commit cebe1c44fb02 eclingo-benchmark-new
 ### Inside eclingo-docker/eclingo-benchmark/
 ```
 - In run.sh file, add solver name in VALID_ARGS
+
 - In run-benchmark.py 
     - add solver name in COMMANDS
     - add an elif statement for new solver in prepare_benchmarks() and use prepare_any_benchmarks() function in body
-- In Dockerfile, update environment variables.
+    - update benchmark_origin after [adding benchmarks](#How-to-add-new-benchmarks-for-solvers).
+
+- In Dockerfile, update environment variables and setup bash script.
 ```
 
 ### Inside eclingo-docker/eclingo-benchmark/output_operations/
 ```
 - In parameters.py file, add parameters with respect to the solver outputs.
+
 - Parameters:
     - answer_line_indices: line number of the answer set in the output
     - delimiters: what characters separate the atoms in the answer set (not required if whitespace)
@@ -69,9 +77,14 @@ docker commit cebe1c44fb02 eclingo-benchmark-new
     - relative_indices: Find line index of answer set with relative index of another word
 ```
 
-### Update eclingo-docker/setup.sh if required.
+### Update eclingo-docker/setup.sh.
+If using new solvers, create a similar bash script as [setup.sh](setup.sh) or update the existing one.
 ```
-This contains all the operations that run inside the docker container. 
+- This contains all the operations that run inside the docker container.
+
+- If not building docker image and running container, 
+    - Create and/or activate the benchmarking environment.
+    - Run the commands from setup.sh by replacing the variables for benchmarking and comparison.
 ```
 
 

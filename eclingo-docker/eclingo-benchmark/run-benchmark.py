@@ -97,7 +97,7 @@ def prepare_benchmarks():
         prepare_benchmarks_qasp(benchmark_origin, BENCHMARK_RUNNING)
     
     elif command_dir == "ezsmt" or command_dir == "clingcon" or command_dir == "clingo":
-        benchmark_origin = "./benchmarks/clingo"
+        benchmark_origin = "./benchmarks/ezsmt"
         print(f"\nUsing solver {command_dir}")
         prepare_any_benchmarks(benchmark, benchmark_origin, BENCHMARK_RUNNING, max_instances)
                 

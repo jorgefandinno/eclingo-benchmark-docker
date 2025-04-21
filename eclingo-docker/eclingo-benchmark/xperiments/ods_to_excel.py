@@ -90,13 +90,13 @@ def get_combined_df(dfs, solvers):
 
 def get_aggregate_solver_times(combined_df, solvers):
     combined_df = combined_df.copy()
-    combined_df["instance"] = [instance.split("/")[0] for instance in combined_df["instance"]]
-    aggregate_df = combined_df.groupby("instance").mean()
+    combined_df["benchmark"] = [instance.split("/")[0] for instance in combined_df["instance"]]
+    aggregate_df = combined_df.groupby("benchmark").mean()
 
     for solver in solvers:
-        df = combined_df[["instance", solver]]
+        df = combined_df[["benchmark", solver]]
         df = df[df[solver] < TIMEOUT_DURATION]
-        aggregate_df[f"{solver}_count"] = df.groupby("instance")[solver].count()
+        aggregate_df[f"{solver}_count"] = df.groupby("benchmark")[solver].count()
     
     return aggregate_df
 

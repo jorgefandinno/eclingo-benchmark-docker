@@ -26,6 +26,8 @@ def filter_df(df):
 def update_memory_error_instances(df, timed_out_file_path):
     root_dir = Path(__file__).resolve().parent.parent
     path = str(root_dir/timed_out_file_path)
+    if not os.path.exists(path):
+        return df
     
     timed_out_df = pd.read_csv(path)
     timed_out_df["instance"] = list(

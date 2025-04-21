@@ -7,7 +7,7 @@ for arg in $@; do
 done
 
 # set variables
-IMAGE_NAME=test
+IMAGE_NAME=eclingo
 SOLVER_1=eclingo
 SOLVER_1_NAME=eclingo
 SOLVER_2=eclingo

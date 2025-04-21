@@ -3,12 +3,13 @@ import os
 import pandas as pd
 from pathlib import Path
 
+TIMEOUT_DURATION = 600
+BENCHMARK_ITERATION = 2
+
 OUTPUT_FOLDER = os.path.join(
     str(Path(__file__).resolve().parent.parent),
     "analysis"
 )
-
-TIMEOUT_DURATION = 600
 
 def filter_df(df):
     df = df.drop(columns = ["min", "median", "max"])
@@ -23,7 +24,6 @@ def filter_df(df):
     return df
 
 def update_memory_error_instances(df, timed_out_file_path):
-    df = df.copy()
     root_dir = Path(__file__).resolve().parent.parent
     path = str(root_dir/timed_out_file_path)
     
@@ -48,8 +48,8 @@ def update_memory_error_instances(df, timed_out_file_path):
     return df
 
 def update_timed_out_instances(df, solver):
-    df[f"{solver}_1"] = [value if value <= TIMEOUT_DURATION else TIMEOUT_DURATION for value in df[f"{solver}_1"]]
-    df[f"{solver}_2"] = [value if value <= TIMEOUT_DURATION else TIMEOUT_DURATION for value in df[f"{solver}_2"]]
+    for idx in range(1, BENCHMARK_ITERATION+1):
+        df[f"{solver}_{idx}"] = [value if value <= TIMEOUT_DURATION else TIMEOUT_DURATION for value in df[f"{solver}_{idx}"]]
     return df
 
 def load_ods_to_df(filepath, solver):
@@ -64,14 +64,19 @@ def load_ods_to_df(filepath, solver):
         all_values.append(row_list)
         
     columns = all_values[0]
-    columns[:3] = ["instance", f"{solver}_1", f"{solver}_2"]
+    columns[0] = "instance"
+    solver_columns = [f"{solver}_{idx}" for idx in range(1, BENCHMARK_ITERATION+1)]
+    columns[1:BENCHMARK_ITERATION+1] = solver_columns
+    
     all_values = all_values[2:]
 
     df = pd.DataFrame(all_values, columns=columns)
     df = filter_df(df)
     df = update_timed_out_instances(df, solver)
-    df[f"{solver}_average"] = (df[f"{solver}_1"] + df[f"{solver}_2"])/2
     
+    sum_all_iterations = sum(df[column] for column in solver_columns)    
+    df[f"{solver}_average"] = sum_all_iterations/BENCHMARK_ITERATION
+
     return df
 
 def get_combined_df(dfs, solvers):

@@ -12,4 +12,4 @@ conda activate ${env_name}
 python examine_output.py -s1 ${solver_1} -s1n ${solver_1_name} -s2 ${solver_2} -s2n ${solver_2_name} > log.txt
 
 # create comparison excel sheets and graphs
-python analyse.py -s ${solver_1_name} ${solver_2_name} >> log.txt
+python analyse_output.py -s ${solver_1_name} ${solver_2_name} >> log.txt

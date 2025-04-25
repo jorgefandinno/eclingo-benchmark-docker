@@ -4,12 +4,12 @@ import math
 import os
 import pandas as pd
 from pathlib import Path
-from .ods_to_excel import OUTPUT_FOLDER, TIMEOUT_DURATION
+from .ods_to_excel import OUTPUT_FOLDER
 
 
 pd.options.display.float_format = '{:,.1f}'.format
 
-def create_tex_file(combined_df, solvers):
+def create_tex_file(combined_df, solvers, timeout_duration):
     """
     Generates tex file that will create cactus plot when compiled
     """
@@ -22,7 +22,7 @@ def create_tex_file(combined_df, solvers):
     all_times.sort()
     
     max_time = float(math.ceil(max(all_times))) # Get which is the maximum time for running.
-    max_time = min(max_time, TIMEOUT_DURATION)
+    max_time = min(max_time, timeout_duration)
     y_tick = {i*max_time/5 for i in range(1,6)}
     
     max_x = (math.ceil(len(all_times)/len(solvers)) + 1)

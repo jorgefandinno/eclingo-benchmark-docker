@@ -1,6 +1,7 @@
 import os
 
 from typing import List
+from .parameters import answer_line_indices, relative_indices
 
 match_files = (
     "matching_instances.txt",
@@ -21,9 +22,21 @@ def find_line_index(path, text):
     for idx, line in enumerate(lines):
         if text.lower() in line.lower():
             return idx
-        
+
     print("Error on finding answer set line index.")
     exit(1)
+
+def find_answer_line_index(solver, path):
+    answer_line_index = answer_line_indices.get(solver)
+    if not answer_line_index and not relative_indices.get(solver):
+        print(f"Could not find answer line index for {solver}. Please check the parameters file.")
+        exit(1)
+            
+    if not answer_line_index:
+        text, deviation = relative_indices[solver]
+        answer_line_index = find_line_index(path, text) + deviation
+    
+    return answer_line_index
 
 def check_sat(path: str):
     if not os.path.isfile(path):

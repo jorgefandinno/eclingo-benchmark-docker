@@ -6,43 +6,29 @@ from output_operations import (
     check_output_consistency
 )
 
-def main(solvers):
-    (s1_name, solver_1), (s2_name, solver_2) = solvers
+def main(solver_1, solver_2, timeout_duration):
+    s1_results_path = f"running/benchmark-tool-{solver_1}/output/project/zuse/results/suite/"
+    s2_results_path = f"running/benchmark-tool-{solver_2}/output/project/zuse/results/suite/"
 
-    s1_results_path = f"running/benchmark-tool-{s1_name}/output/project/zuse/results/suite/"
-    s2_results_path = f"running/benchmark-tool-{s2_name}/output/project/zuse/results/suite/"
+    # check if SAT and UNSAT are consistent across both solvers
+    check_output_satisfiability(solver_1, solver_2, s1_results_path, s2_results_path)
 
-    check_output_satisfiability(s1_name, s2_name, s1_results_path, s2_results_path)
+    # prepare constraints from answer sets of first solver
+    rel_instance_path = f"running/benchmark-tool-{solver_1}/experiments/instances"
+    save_constraints(solver_1, s1_results_path, rel_instance_path)
 
-    rel_instance_path = f"running/benchmark-tool-{s1_name}/experiments/instances"
-    save_constraints(s1_name, s1_results_path, rel_instance_path)
-
-    check_output_consistency(s2_name, solver_2)
+    # use constraints from first solver and check with second solver
+    check_output_consistency(solver_2, timeout_duration)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-s1", "--solver-1", required=True, help="solver 1 name used in commands")
-    parser.add_argument("-s1n", "--solver-1-name", help="name used to save solver 1 results if different than the original name; defaults to solver 1 name if not provided")
     parser.add_argument("-s2", "--solver-2", required=True, help="solver 2 name used in commands")
-    parser.add_argument("-s2n", "--solver-2-name", help="name used to save solver 2 results if different than the original name; defaults to solver 2 name if not provided")
+    parser.add_argument("-t", "--timeout", default=610, help="Timeout duration for second solver while checking")
 
     args = parser.parse_args()
-
     solver_1 = args.solver_1
-    if args.solver_1_name:
-        s1_name = args.solver_1_name
-    else:
-        s1_name = solver_1
-
     solver_2 = args.solver_2
-    if args.solver_2_name:
-        s2_name = args.solver_2_name
-    else:
-        s2_name = solver_2
+    timeout_duration = args.timeout
 
-    solvers = (
-        (s1_name, solver_1),
-        (s2_name, solver_2),
-    )
-
-    main(solvers)
+    main(solver_1, solver_2, timeout_duration)

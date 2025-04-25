@@ -10,15 +10,11 @@ from .constraint_utils import (
     write_to_file,
     get_answer_set_path,
     get_constraints_path,
-    find_line_index,
+    find_answer_line_index,
 )
 
-from .parameters import (
-    answer_line_indices,
-    delimiters,
-    answer_line_prefixes,
-    relative_indices,
-)
+from .parameters import delimiters, answer_line_prefixes
+from .custom_operations import perform_solver_based_operation
 
 def get_unique_output_filepaths(op_filepaths):
     unique_op_filepaths = set()
@@ -32,12 +28,12 @@ def get_unique_output_filepaths(op_filepaths):
 
     return unique_op_filepaths
     
-def save_constraints(s1_name: str, results_path: str, rel_instance_path: str) -> bool:
+def save_constraints(solver: str, results_path: str, rel_instance_path: str) -> bool:
     """
     Writes answer sets and constraints to files
     """
     df = pd.read_csv(match_files[0])
-    df = df[df[s1_name] == "SAT"]
+    df = df[df[solver] == "SAT"]
     op_filepaths = df["instance"]
     op_filepaths = get_unique_output_filepaths(op_filepaths)
 
@@ -54,15 +50,13 @@ def save_constraints(s1_name: str, results_path: str, rel_instance_path: str) ->
             op_filepath
         )
         
-        answer_line_index = answer_line_indices.get(s1_name)
-        if not answer_line_index:
-            text, deviation = relative_indices[s1_name]
-            answer_line_index = find_line_index(path, text) + deviation
-            
+        answer_line_index = find_answer_line_index(solver, path)     
         answer_set = get_answer_set(path, answer_line_index)
-        answer_set = remove_prefix(answer_set, s1_name)
+        answer_set = remove_prefix(answer_set, solver)
         
-        as_atoms = get_as_atoms(answer_set, delimiter=delimiters.get(s1_name))
+        as_atoms = get_as_atoms(answer_set, delimiter=delimiters.get(solver))
+        as_atoms = perform_solver_based_operation(solver, as_atoms)
+
         as_path = get_answer_set_path(filename)
         write_to_file(as_path, as_atoms, replace=True)
         
@@ -92,8 +86,8 @@ def get_answer_set(path, line_index):
     answer_set = lines[line_index]
     return answer_set
 
-def remove_prefix(answer_set, s1_name):
-    if s1_name not in answer_line_prefixes:
+def remove_prefix(answer_set, solver):
+    if solver not in answer_line_prefixes:
         return answer_set
-    prefix = answer_line_prefixes[s1_name]
+    prefix = answer_line_prefixes[solver]
     return answer_set.replace(prefix, "")

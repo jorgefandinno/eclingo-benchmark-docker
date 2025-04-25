@@ -9,16 +9,14 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # setup all environment variables
 ENV solver_1=eclingo
-ENV solver_1_name=eclingo
-ENV solver_2=eclingo
-ENV solver_2_name=eclingo-old
+ENV solver_2=eclingo-old
 
 ENV max_instances=2
 ENV benchmark=yale
 
-ENV conda_env_file_path_1=envs/environment_eclingo_reif.yml
+ARG conda_env_file_path_1=envs/environment_eclingo_reif.yml
 ENV env_name_1=eclingo_reif
-ENV conda_env_file_path_2=envs/environment_eclingo_old.yml
+ARG conda_env_file_path_2=envs/environment_eclingo_old.yml
 ENV env_name_2=eclingo_old
 
 # Update Ubuntu Software repository

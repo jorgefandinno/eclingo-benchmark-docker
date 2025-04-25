@@ -2,16 +2,13 @@ FROM ubuntu:22.04
 
 # setup environment variables
 ENV solver_1=ezsmt
-ENV solver_1_name=ezsmt
 ENV solver_2=clingcon
-ENV solver_2_name=clingcon
 ENV solver_3=clingo
-ENV solver_3_name=clingo
 
 ENV max_instances=2
 ENV benchmark=weighted-sequence
 
-ENV conda_env_file_path=envs/environment_ezsmt.yml
+ARG conda_env_file_path=envs/environment_ezsmt.yml
 ENV env_name=ezsmt
 
 # update and install required packages

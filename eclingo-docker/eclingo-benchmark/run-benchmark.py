@@ -24,8 +24,12 @@ COMMANDS = {"eclingo-old": f"eclingo $@\n\n",
             "selp":    f"bash \"$@\"\n\n",
             "qasp":    f"bash \"$@\"\n\n",
             "ezsmt": f"ezsmt -V 0 $@\n\n",
+            "ezsmt-cvc5-idl": f"ezsmt -V 0 -s cvc5 -l 3 $@\n\n",
+            "ezsmt-z3-idl": f"ezsmt -V 0 -s z3 -l 3 $@\n\n",
+            "ezsmt-yices-idl": f"ezsmt -V 0 -s yices -l 3 $@\n\n",
             "clingcon": f"clingcon $@\n\n",
             "clingo": f"clingo $@\n\n",
+            "clingo-dl": f"clingo-dl $@\n\n",
         }
 
 SHOW_COMMAND_GROUNDERS = {"show-gringo", "show-idlv"}
@@ -98,6 +102,16 @@ def prepare_benchmarks():
     
     elif command_dir == "ezsmt" or command_dir == "clingcon" or command_dir == "clingo":
         benchmark_origin = "./benchmarks/ezsmt"
+        print(f"\nUsing solver {command_dir}")
+        prepare_any_benchmarks(benchmark, benchmark_origin, BENCHMARK_RUNNING, max_instances)
+    
+    elif (
+        command_dir == "ezsmt-cvc5-idl" or 
+        command_dir == "ezsmt-z3-idl" or
+        command_dir == "ezsmt-yices-idl" or
+        command_dir == "clingo-dl"
+    ):
+        benchmark_origin = "./benchmarks/ezsmt-idl"
         print(f"\nUsing solver {command_dir}")
         prepare_any_benchmarks(benchmark, benchmark_origin, BENCHMARK_RUNNING, max_instances)
                 

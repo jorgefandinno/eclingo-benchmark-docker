@@ -12,14 +12,10 @@ from .constraint_utils import (
     get_answer_set_path,
     get_constraints_path,
     replace_constraints,
-    find_line_index,
+    find_answer_line_index,
 )
 
-from .parameters import (
-    answer_line_indices,
-    delimiters,
-    relative_indices,
-)
+from .parameters import solver_commands, delimiters
 
 
 def prepare_instance_paths(df):
@@ -64,9 +60,13 @@ def add_constraints(new_answer_set, path, delimiter=None):
     return True
 
 
-def check_output_consistency(s2_name, solver_2):
+def check_output_consistency(solver, timeout_duration):
     df = pd.read_csv(match_files[0])
-    df = df[df[s2_name] == "SAT"]
+    df = df[df[solver] == "SAT"]
+    
+    solver_command = solver_commands.get(solver)
+    if not solver_command:
+        solver_command = solver
 
     instance_paths = prepare_instance_paths(df)
     for path in instance_paths:
@@ -74,14 +74,12 @@ def check_output_consistency(s2_name, solver_2):
         print(path)
 
         while True:
-            command = f"{solver_2} {path} {get_constraints_path(path)}"
+            command = f"{solver_command} {path} {get_constraints_path(path)}"
 
             output_file = open("output.txt", "w")
-            error_file = open("error.txt", "w")
-            subprocess.run([command], shell=True, stdout=output_file, stderr=error_file, timeout=610)
+            subprocess.run([command], shell=True, stdout=output_file, stderr=output_file, timeout=timeout_duration)
             gc.collect()
             output_file.close()
-            error_file.close()
 
             sat = check_sat("output.txt")
             if sat != "SAT":
@@ -89,12 +87,9 @@ def check_output_consistency(s2_name, solver_2):
                 break
             
             new_as_path = "output.txt"
-            line_index = answer_line_indices.get(s2_name)
-            if not line_index:
-                text, deviation = relative_indices[s2_name]
-                line_index = find_line_index(path, text) + deviation
+            answer_line_index = find_answer_line_index(solver, new_as_path)
                 
-            answer_set = get_new_answer_set(new_as_path, line_index)
-            if not add_constraints(answer_set, path, delimiters.get(s2_name)):
+            answer_set = get_new_answer_set(new_as_path, answer_line_index)
+            if not add_constraints(answer_set, path, delimiters.get(solver)):
                 break
 

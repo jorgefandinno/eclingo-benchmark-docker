@@ -9,9 +9,7 @@ done
 # set variables
 IMAGE_NAME=eclingo
 SOLVER_1=eclingo
-SOLVER_1_NAME=eclingo
-SOLVER_2=eclingo
-SOLVER_2_NAME=eclingo-old
+SOLVER_2=eclingo-old
 
 # build image
 BUILD_COMMAND="docker build $BUILD_ARGS -t $IMAGE_NAME ."
@@ -29,7 +27,7 @@ if [ $(docker ps -a -q -f name=$CONTAINER_NAME) ]; then
 fi
 
 # run container
-RUN_COMMAND="docker run --name $CONTAINER_NAME $IMAGE_NAME"
+RUN_COMMAND="docker run --name $CONTAINER_NAME -e max_instances=2 -e benchmark=yale $IMAGE_NAME"
 printf "\nRunning: $RUN_COMMAND\n"
 eval "$RUN_COMMAND"
 
@@ -41,12 +39,12 @@ docker cp $CONTAINER_NAME:/root/eclingo-benchmark/timed_out_instances.txt result
 docker cp $CONTAINER_NAME:/root/eclingo-benchmark/log.txt results/
 docker cp $CONTAINER_NAME:/root/eclingo-benchmark/analysis/ results/
 
-mkdir -p results/$SOLVER_1_NAME
-docker cp $CONTAINER_NAME:/root/eclingo-benchmark/running/benchmark-tool-$SOLVER_1_NAME/experiments/results/$SOLVER_1_NAME/$SOLVER_1_NAME.ods results/$SOLVER_1_NAME/
-docker cp $CONTAINER_NAME:/root/eclingo-benchmark/running/benchmark-tool-$SOLVER_1_NAME/output/project/zuse/results/suite/ results/$SOLVER_1_NAME/
+mkdir -p results/$SOLVER_1
+docker cp $CONTAINER_NAME:/root/eclingo-benchmark/running/benchmark-tool-$SOLVER_1/experiments/results/$SOLVER_1/$SOLVER_1.ods results/$SOLVER_1/
+docker cp $CONTAINER_NAME:/root/eclingo-benchmark/running/benchmark-tool-$SOLVER_1/output/project/zuse/results/suite/ results/$SOLVER_1/
 
-mkdir -p results/$SOLVER_2_NAME
-docker cp $CONTAINER_NAME:/root/eclingo-benchmark/running/benchmark-tool-$SOLVER_2_NAME/experiments/results/$SOLVER_2_NAME/$SOLVER_2_NAME.ods results/$SOLVER_2_NAME/
-docker cp $CONTAINER_NAME:/root/eclingo-benchmark/running/benchmark-tool-$SOLVER_2_NAME/output/project/zuse/results/suite/ results/$SOLVER_2_NAME/
+mkdir -p results/$SOLVER_2
+docker cp $CONTAINER_NAME:/root/eclingo-benchmark/running/benchmark-tool-$SOLVER_2/experiments/results/$SOLVER_2/$SOLVER_2.ods results/$SOLVER_2/
+docker cp $CONTAINER_NAME:/root/eclingo-benchmark/running/benchmark-tool-$SOLVER_2/output/project/zuse/results/suite/ results/$SOLVER_2/
 
 printf "\nAll results are stored in results directory\n"

@@ -61,9 +61,11 @@ docker commit cebe1c44fb02 eclingo-benchmark-new
 - In run-benchmark.py 
     - add solver name in COMMANDS
     - add an elif statement for new solver in prepare_benchmarks() and use prepare_any_benchmarks() function in body
-    - update benchmark_origin after [adding benchmarks](#How-to-add-new-benchmarks-for-solvers).
+    - update benchmark_origin after adding benchmarks. Check how to add benchmarks below.
 
-- In Dockerfile, update environment variables and setup bash script.
+- Update timeout, memory, and other configuration for benchmarking in run-benchmark.xml 
+
+- In Dockerfile, update environment variables and change COPY command and CMD command for "setup.sh" bash script as required.
 ```
 
 ### Inside eclingo-docker/eclingo-benchmark/output_operations/
@@ -71,6 +73,7 @@ docker commit cebe1c44fb02 eclingo-benchmark-new
 - In parameters.py file, add parameters with respect to the solver outputs.
 
 - Parameters:
+    - solver_commands: maps solver name to solver command
     - answer_line_indices: line number of the answer set in the output
     - delimiters: what characters separate the atoms in the answer set (not required if whitespace)
     - answer_line_prefixes: what word precedes the answer set in the output

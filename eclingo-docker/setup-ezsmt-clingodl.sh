@@ -16,4 +16,4 @@ python examine_output.py -s1 ${solver_1} -s2 ${solver_3} >> log.txt
 python examine_output.py -s1 ${solver_1} -s2 ${solver_4} >> log.txt
 
 # create comparison excel sheets and graphs
-python analyse_output.py -s ${solver_1} ${solver_2} ${solver_3} ${solver_4} -t 29 >> log.txt
+python analyse_output.py -s ${solver_1} ${solver_2} ${solver_3} ${solver_4} -t 30 >> log.txt

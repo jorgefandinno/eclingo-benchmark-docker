@@ -105,6 +105,7 @@ Arguments:
 #### Copying results from container to host machine
 The process when completed stores all the results in the docker container. The results are copied back to the host machine using docker copy commands. THe results are stored in results directory of the host machine.
 
+
 Now, we list the remaining comparison scripts for comparing supported solvers.
 
 ### Comparison Script for EZSMT and Clingo-dl Comparison
@@ -123,10 +124,15 @@ If benchmarking and comparing clingo-dl with three different IDL versions of EZS
 # How to add new solver or update existing configuration
 
 If you are adding a new solver, begin by creating a new directory within eclingo-docker and prepare a Dockerfile inside.
-    For example: to compare a new solver ezsmt-z3 with clingcon, create a directory named "ezsmt-z3-clingcon-comparison". Copy a suitable Dockerfile, for example: ezsmt-comparison/Dockerfile, into the created directory. Now, modify the Dockerfile and supporting scripts as follows:
+<br>
+For example: to compare a new solver ezsmt-z3 with clingcon, create a directory named "ezsmt-z3-clingcon-comparison". 
+
+Copy a suitable Dockerfile, for example: ezsmt-comparison/Dockerfile, into the created directory.
 
 Also, make a copy of setup.sh file. <br>
     For example: for ezsmt-z3 and clingcon comparison, copy setup-ezsmt-clingcon.sh file and modify it, if required.
+
+Now, modify the Dockerfile and supporting scripts as follows:
 
 ### Inside eclingo-benchmark/
 ```
@@ -180,7 +186,7 @@ If using new solvers or updating existing ones, create a similar bash script as
     - Compare Output
     - Analyse Output
 
-- If not building docker image and running container, 
+- If running locally in the host machine without using docker container, 
     - Create and/or activate the benchmarking environment.
     - Run the commands from setup.sh by replacing the variables for benchmarking and comparison.
 ```

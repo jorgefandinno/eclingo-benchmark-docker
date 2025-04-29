@@ -3,7 +3,7 @@
 # initialize conda shell
 eval "$(conda shell.bash hook)"
 
-# Comparison between ezsmt, clingcon and clingo
+# Run benchmarks for solvers
 conda activate ${env_name}
 ./run.sh ${solver_1} --max-instances=${max_instances} --benchmark=${benchmark}
 ./run.sh ${solver_2} --max-instances=${max_instances} --benchmark=${benchmark}

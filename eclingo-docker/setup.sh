@@ -3,7 +3,7 @@
 # initialize conda shell
 eval "$(conda shell.bash hook)"
 
-# Comparison between eclingo-new and eclingo-old
+# Run benchmarks for solvers
 conda activate ${env_name_1}
 ./run.sh ${solver_1} --max-instances=${max_instances} --benchmark=${benchmark}
 conda activate ${env_name_2}

@@ -7,7 +7,7 @@ different versions of the same solver. The output of one of the solvers
 is used to create a constraint program, which, along with the original program, 
 is then passed on to the second solver to ensure that the results are consistent. 
 Similarly, the outputs are used to analyze the solvers' performance by generating 
-spreadsheets, plots, and graphs. The entire process is automated through the 
+spreadsheets and graphs. The entire process is automated through the 
 use of Docker containers. This way, the platform avoids the time-consuming 
 process of manually preparing benchmarking environments before each benchmark run, 
 making the whole process easily reproducible as well.
@@ -32,7 +32,8 @@ Currently, the platform supports these solvers: eclingo, ezsmt, clingcon, clingo
 If adding a new solver, one may have to update some scripts such as [examine_output.py](eclingo-benchmark/examine_output.py). More details can be found in these sections: [adding new solver or updating existing configuration](#how-to-add-new-solver-or-update-existing-configuration)
 and [adding new benchmarks](#how-to-add-new-benchmarks). <br>
 
-If required comparison script exists for the solvers, run the comparison script. See below for more information on comparison script.
+If required comparison script exists for the solvers, run the comparison script. See below for more examples on comparison script. 
+More details on how to create a new comparison script can be found in [Create/Update compare.sh](#createupdate-comparesh) section.
 
 ### Comparison Script for Eclingo Comparison
 If benchmarking and comparing two different eclingo versions, run the [compare.sh](compare.sh) bash script.
@@ -64,7 +65,7 @@ Environment variables from [Dockerfile](Dockerfile) can be updated at runtime as
 This uses the benchmarking tool to run the benchmark problems. The configuration 
 for the benchmarking operation such as timeout duration and memory can be set up 
 in [run-benchmark.xml](eclingo-benchmark/run-benchmark.xml). The environment variables such as "benchmark" and 
-"max-instances" can be updated at runtime using -e flag as explained under running docker container.
+"max-instances" can be updated at runtime using -e flag as explained under the "Running docker container" section above.
 Please see [updating existing configuration](#how-to-add-new-solver-or-update-existing-configuration) 
 for updating more configurations.
 
@@ -103,7 +104,7 @@ Arguments:
 ```
 
 #### Copying results from container to host machine
-The process when completed stores all the results in the docker container. The results are copied back to the host machine using docker copy commands. THe results are stored in results directory of the host machine.
+The process when completed stores all the results in the docker container. The results are copied back to the host machine using docker copy commands. The results are stored in results directory of the host machine.
 
 
 Now, we list the remaining comparison scripts for comparing supported solvers.
@@ -129,10 +130,22 @@ For example: to compare a new solver ezsmt-z3 with clingcon, create a directory 
 
 Copy a suitable Dockerfile, for example: ezsmt-comparison/Dockerfile, into the created directory.
 
-Also, make a copy of setup.sh file. <br>
-    For example: for ezsmt-z3 and clingcon comparison, copy setup-ezsmt-clingcon.sh file and modify it, if required.
+Make a copy of setup.sh file. <br>
+For example: for ezsmt-z3 and clingcon comparison, copy setup-ezsmt-clingcon.sh file to setup-ezsmt-z3-clingcon.sh and modify it, if necessary.
 
-Now, modify the Dockerfile and supporting scripts as follows:
+See [Create/Update setup.sh](#createupdate-setupsh) section for details on setup script.
+
+Now, modify the Dockerfile.
+```
+In Dockerfile:
+
+- Update name of bash script to "setup-ezsmt-z3-clingcon-comparison.sh" in COPY command and CMD command.
+
+- Update environment variables such as solver names, benchmarks, max_instances, and argument variable such as conda environment file.
+    For environment yml file: Start with making a copy of environment_ezsmt.yml and update it as required.
+```
+<br>
+Modify the supporting scripts as follows:
 
 ### Inside eclingo-benchmark/
 ```
@@ -152,10 +165,7 @@ Now, modify the Dockerfile and supporting scripts as follows:
 
     - update benchmark_origin after adding new benchmarks or by using existing benchmarks as shown above. Check how to add benchmarks below.
 
-
 - In run-benchmark.xml, update timeout, memory, and other configuration for benchmarking if required.
-
-- In Dockerfile, update environment variables such as solver names, benchmarks and max_instances, and change COPY command and CMD command for "setup.sh" bash script as required. See "Create/Update setup.sh" section for details.
 ```
 
 ### Inside eclingo-benchmark/output_operations/
@@ -168,13 +178,28 @@ Now, modify the Dockerfile and supporting scripts as follows:
             for adding ezsmt-z3: 
                 "ezsmt-z3": "ezsmt -V 0 -s z3"
             If not used in this mapping, solver command will be the same as the solver name provided.
+    
     - answer_line_indices: line number of the answer set in the output
-    - delimiters: what characters separate the atoms in the answer set (not required if whitespace)
-    - answer_line_prefixes: what word precedes the answer set in the output
-    - relative_indices: Find line index of answer set with relative index of another word
 
-- If there are any errors while comparing the output, please look at the results files and make necessary changes in the "parameters.py" file as required.
- For example: updating solver command, updating answer line index, updating relative index, etc. 
+    - delimiters: what characters separate the atoms in the answer set (not required if whitespace)
+    
+    - answer_line_prefixes: what word precedes the answer set in the output
+    
+    - relative_indices: Find line index of answer set with relative index of another word
+        For example: 
+            for adding relative index for ezsmt-z3:
+                "ezsmt-z3": ("SAT", 1)
+            This tells the script to look for "SAT" keyword and add 1 to its index for answer line index.
+
+- If adding a new solver that requires a custom parser, add custom parsing function in custom_operations.py
+    For example:
+        To add custom operation for clingo-dl solver, define a custom function "clingo_dl_operations" with 
+        operations required for clingo-dl answer set parsing, and add it to the custom_operations dictionary.
+            "clingo-dl": clingo_dl_operations
+
+- If there are any errors while comparing the output, please look at the results files 
+    and make necessary changes in the "parameters.py" file as required by the solver outputs.
+    For example: updating solver command, updating answer line index, updating relative index, etc. 
 ```
 
 ### Create/Update setup.sh.
@@ -191,18 +216,26 @@ If using new solvers or updating existing ones, create a similar bash script as
     - Run the commands from setup.sh by replacing the variables for benchmarking and comparison.
 ```
 
+### Create/Update compare.sh
 
 Once everything is done, create a new bash script to compare solvers.
 
 
-For example: to compare ezsmt-z3 and clingcon, create a bash script named "compare-ezsmt-z3-clingcon.sh" by copying "compare-ezsmt-clingcon.sh" and changing the solver name variables, image name variable, and dockerfile location within the build command if required.
+For example: to compare ezsmt-z3 and clingcon, create a bash script named "compare-ezsmt-z3-clingcon.sh" 
+by copying "compare-ezsmt-clingcon.sh" and changing the solver name variables, image name variable, 
+and dockerfile location within the build command if required.
+
+Now, after everything is done, run the compare bash script for ezsmt-z3 and clingcon comparison as follows:
+```
+./compare-ezsmt-z3-clingcon.sh
+```
 
 
 # How to add new benchmarks
 ```
 # inside eclingo-benchmark/benchmarks/
 
-- Create a directory with a distinct name, e.g. solver name.
+- Create a directory with a distinct name, e.g. solver_name.
 - Copy benchmarks inside the created directory.
 - The directory structure should be:
 
